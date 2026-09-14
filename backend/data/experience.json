@@ -1,0 +1,38 @@
+[
+  {
+    "role": "Machine Learning & Data Science Intern",
+    "organization": "Yellowmatics",
+    "period": "Internship Duration",
+    "location": "Remote / Hybrid",
+    "responsibilities": [
+      "Engineered, fine-tuned, and optimized computer vision and predictive machine learning models using TensorFlow, PyTorch, and Flask.",
+      "Spearheaded complete end-to-end ML lifecycle: dataset curation, exploratory data analysis, data preprocessing pipelines, validation, and REST API deployment.",
+      "Optimized inference throughput and latency for containerized production models."
+    ],
+    "technologies": ["Python", "TensorFlow", "PyTorch", "Flask", "OpenCV", "REST APIs", "Docker"]
+  },
+  {
+    "role": "Freelance Tech & Creative Lead",
+    "organization": "Strikkerz Team",
+    "period": "Recent - Present",
+    "location": "Remote",
+    "responsibilities": [
+      "Architected and deployed responsive React.js and modern web applications with seamless UX/UI design systems.",
+      "Managed client content strategies, brand storytelling, and end-to-end continuous deployment pipelines using Git, GitHub, and Vercel.",
+      "Integrated automation hooks, third-party APIs, and modern interaction primitives for high client conversion rates."
+    ],
+    "technologies": ["React.js", "JavaScript", "UI/UX Design", "Vercel", "GitHub Actions", "WordPress", "REST APIs"]
+  },
+  {
+    "role": "Autonomous Agent Architect & Researcher",
+    "organization": "Mahendra Engineering College / Independent AI Lab",
+    "period": "2023 - Present",
+    "location": "Tamil Nadu, India",
+    "responsibilities": [
+      "Published academic research paper on machine learning-based edge anomaly detection for IoT home security architectures.",
+      "Designed and deployed 30+ production n8n multi-agent workflows including college accreditation automation (NAAC, NIRF, NBA, AICTE).",
+      "Led technical teams in national hackathons (MSME, SAP Hackathon, CATCH 2024/2025, EDU-HACK INSPIRE)."
+    ],
+    "technologies": ["Multi-Agent Systems", "n8n", "Function Calling", "Gemma 3", "Claude Code", "IoT Sensors", "Raspberry Pi"]
+  }
+]

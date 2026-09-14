@@ -1,0 +1,23 @@
+{
+  "name": "Salman Khan D",
+  "preferred_name": "Salman Khan",
+  "title": "AI Engineer & Full-Stack Developer",
+  "tagline": "Architecting Autonomous AI Systems, Production LLM Applications & High-Performance Web Architectures",
+  "bio": "Final-year B.Tech student specializing in Artificial Intelligence & Data Science at Mahendra Engineering College (CGPA: 8.72). Passionate about Artificial Intelligence, Full Stack Development, IoT, and building innovative technology solutions that solve real-world problems. Successfully developed and deployed 15+ production-grade AI/ML applications and 30+ autonomous n8n workflows.",
+  "location": "Tamil Nadu, India",
+  "availability": "Open to Full-Time Roles, Strategic Engineering Consultancies & AI Research Collaborations",
+  "core_focus": [
+    "Agentic Workflows & Multi-Agent Orchestration",
+    "Open-Source & Proprietary LLM Deployment (Gemma, LLaMA, GPT-4o)",
+    "Full-Stack Web Engineering (React, Vite, Next.js, Node.js, FastAPI)",
+    "Computer Vision & Edge IoT (YOLO, OpenCV, Raspberry Pi)",
+    "Enterprise Automation (n8n, Claude Code, Workflow Engineering)"
+  ],
+  "highlights": [
+    "Published research paper on ML-Based Home Security System with IoT anomaly detection",
+    "Finalist across prestigious hackathons: MSME Hackathon, SAP Hackathon, CATCH 2024 & 2025, EDU-HACK INSPIRE",
+    "Former ML & Data Science Intern at Yellowmatics",
+    "Freelance Tech & Creative Lead at Strikkerz Team",
+    "Event Core Member of AInnovat Innovators Club & Anti-Ragging Campaign Leader"
+  ]
+}

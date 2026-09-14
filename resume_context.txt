@@ -1,0 +1,184 @@
+My name is Salman Khan D, and I am a final-year B.Tech student specializing in Artificial Intelligence and Data Science at Mahendra Engineering College, Tamil Nadu, with a CGPA of 8.72.
+I am passionate about Artificial Intelligence, Full Stack Development, IoT, and building innovative technology solutions that solve real-world problems. Throughout my academic journey, I have successfully developed and deployed more than 15 projects across AI/ML, Computer Vision, Full Stack Development, and IoT domains.
+I completed my internship as a Machine Learning and Data Science Intern at Yellowmatics, where I worked on building and optimizing computer vision and predictive machine learning models using TensorFlow, PyTorch, and Flask. I gained hands-on experience in the complete machine learning lifecycle, including data preprocessing, model training, evaluation, and REST API deployment.
+Currently, I am also working as a Freelance Tech and Creative Lead at Strikkerz Team, where I develop React.js and WordPress-based web applications, handle UI/UX design, content strategy, and manage end-to-end deployment using GitHub and Vercel.
+My technical skill set includes Python, Java, JavaScript, C++, SQL, HTML, CSS, React.js, Node.js, Next.js, Flask, TensorFlow, PyTorch, OpenCV, YOLO, NLP, Transformers, Gemini LLM, Firebase, Cloud Computing, GitHub, Raspberry Pi, and IoT Sensors. I also have a strong foundation in Data Structures, Algorithms, Object-Oriented Programming, DBMS, and Operating Systems.
+Some of my key projects include: • AI Interview Platform – an NLP-powered application that simulates interviews and provides instant feedback on confidence, tone, and response quality. • AI Career Coach – a full-stack AI platform for resume analysis, skill-gap identification, roadmap generation, and job matching using LLM APIs. • Object Detection and Information Extraction System – a real-time YOLO and OpenCV-based solution for visual analytics and automated information extraction. • ML-Based Home Security System – a Raspberry Pi and IoT-powered security solution with machine learning-based anomaly detection, for which I published a research paper. • AI Learning Platform – an intelligent learning management system with AI-powered course recommendations and adaptive learning paths. • Healthcare Assistant AI – a conversational AI platform for personalized health assistance and symptom guidance. 
+I have hands on experience on creating fullstack application using Antigravity with help of AI Tools with experience of both frontend and Backend
+AI Resume Builder
+🔗https://remix-of-ai-resume-spark-main.vercel.app
+Built a web app that lets users generate professional, ATS-optimized resumes using AI
+Users input their details and the app auto-formats content into polished resume templates
+Reduces resume creation time from hours to minutes through AI-assisted content suggestions
+Built with React, deployed on Vercel
+AI Course Generator
+🔗 https://project-six-delta-36.vercel.app
+Built an AI-powered platform that auto-generates structured course content from a given topic
+Users input a subject and the app creates organized lessons/modules using AI
+Streamlines course creation for educators or learners by automating content structuring
+Built with React, deployed on Vercel
+AI Career Coach
+🔗 https://ai-career-coach-full-stack.vercel.app
+Developed a full-stack AI career coaching platform offering personalized guidance to job seekers
+Users interact with an AI coach for career advice, skill gap analysis, and job search strategy
+Combines a React/Next.js frontend with a backend API for persistent user sessions and data
+Helps users make informed career decisions through conversational AI guidance
+AI-Powered Learning Platform
+🔗 https://coure-brown.vercel.app
+Created an AI-driven e-learning platform that personalizes course content for learners
+Users can browse and engage with courses, with AI assisting in content delivery/recommendations
+Designed to adapt learning paths based on user progress and goals
+Built with a modern frontend framework, deployed on Vercel
+AI Interview Coach
+🔗 https://ai-i-nterview.vercel.app
+Built an AI-powered mock interview tool that simulates real interview scenarios for users
+Users practice answering questions and receive AI-generated feedback on their responses
+Helps job seekers improve interview performance through repeated, low-stakes practice
+Deployed as a web app for accessible, on-demand interview prep
+1. AI Course Selector App
+Built an AI-driven conversational tool enabling prospective students to select the best-fit college course from 10 options based on skills/interests; used by admission counsellors to improve enrollment conversion and parent confidence.
+Helps incoming students pick the right course/department based on skills and interests during counselling. Used by career counsellors at admission time to impress parents and boost enrollment confidence.
+2. AI Job Role Finder App
+Developed an AI chatbot guiding newly admitted students to choose one of 10 high-demand tech job roles through interactive Q&A, replacing generic learning with targeted, role-specific career planning.
+Helps newly admitted students choose one specific high-demand job role (Data Analyst, ML Engineer, etc.) instead of generic CS learning. Used early in college life so students train with a clear, job-specific target from day one.
+3. AI Department Knowledge App (Data Analytics)
+Created a full-stack AI learning hub delivering semester-wise syllabus, subjects, tools, and study materials for the Data Analytics department, serving as a centralized self-paced learning resource.
+Teaches students the complete foundations of their chosen department — subjects, syllabus, tools, skills, materials for all 8 semesters. Used throughout the course to build strong fundamentals and a one-stop reference hub.
+4. AI Job Role Mastery App (Data Analyst)
+Designed an in-depth AI platform teaching role-specific knowledge — day-in-the-life simulations, salary benchmarks, company-specific workflows, and responsibilities — to prepare students for real-world Data Analyst roles.
+Goes deeper than the department app, teaching real-world role knowledge — day-in-the-life, projects, salary ranges, companies. Used after students pick "Data Analyst" as their role, to think and act like a working professional.
+5. AI Tool Mastery App (Excel for Data Analysts)
+Built a 10-module AI-guided curriculum teaching Excel specifically for data analysis (Pivot Tables, Power Query, DAX, dashboards), enabling tool-specific mastery beyond generic tutorials.
+Teaches Excel specifically the way a Data Analyst uses it, not generic tutorials — cleaning, pivots, dashboards, Power Query. Used by students to master one core tool deeply before moving to the next (SQL, Python, etc)
+6. AI Mini & Mega Project Generator
+Engineered an AI app providing 5 mini and 5 mega hands-on projects per tool with sample datasets, step-by-step instructions, and an integrated AI assistant for real-time doubt resolution and applied learning.
+Provides 5 mini + 5 mega hands-on projects per tool with datasets, step-by-step guidance, and an AI doubt-solver. Used by students after learning a tool, to apply knowledge practically and build a portfolio.
+7. AI Soft Skills Trainer App
+Developed a skill-building AI app covering storytelling, communication, business analysis, and decision-making to complement technical training and improve job readiness.
+Teaches non-tool skills like storytelling, communication, business analysis, and decision-making needed for the role. Used alongside tool learning so students aren't just technically skilled but interview- and job-ready.
+8. AI Aptitude & Technical Interview Prep App
+Built a comprehensive AI-powered prep tool covering aptitude, DSA, and technical interview concepts with pro tips, shortcuts, and AI-driven doubt clarification.
+Covers general aptitude, DSA, and technical interview concepts with tips, shortcuts, and an AI doubt-solver. Used by students preparing for placement drives and competitive company interview rounds.
+9. AI Internship Finder App
+Implemented a multi-level n8n automation agent with LinkedIn scraping to surface paid/unpaid internships, startup opportunities, and cold-outreach contacts tailored to the Data Analyst role.
+Uses an n8n + LinkedIn scraping agent to surface paid/unpaid internships, startup openings, and cold-outreach contacts. Used by students after building skills/projects, to gain real-world experience before graduating.
+10. AI Interview Preparation App
+Created an AI-driven interview readiness platform covering tool-specific questions, business case scenarios, and data storytelling frameworks to help students confidently ace final placement interviews.
+Prepares students for actual interviews — "Tell me about yourself," tool-specific questions, business case questions, storytelling. Used as the final step before placements, turning learned skills into confident interview performance. Image Diagnosis Assistant
+Image Diagnosis Assistant is an AI-powered medical image analysis application designed to assist users in identifying potential abnormalities from uploaded medical images.
+The system takes an image as input, processes it using AI/ML models, and provides an analysis of the detected patterns or possible conditions. The goal is not to replace medical professionals, but to act as a decision-support and preliminary screening tool.
+Key aspects:
+Medical image upload and preprocessing
+AI-based image classification/analysis
+Detection of potentially abnormal regions or patterns
+AI-generated explanation of the result
+User-friendly interface for uploading images and viewing analysis
+Designed with an emphasis on responsible AI and clear medical disclaimers
+ Finova
+Finova is a modern personal finance and financial management application focused on helping users better understand and manage their money.
+The application can bring financial information into one place and turn raw transaction data into useful insights. Instead of simply displaying numbers, the objective is to help users understand where their money goes, how they are spending, and how they can improve their financial habits.
+Key aspects:
+Expense and income tracking
+Transaction management
+Spending categorization
+Financial summaries and dashboards
+Budget/financial goal tracking
+Visual analytics and charts
+Intelligent financial insights
+ Logistics App
+The Logistics App is designed to streamline logistics and delivery operations by connecting the different stages of the delivery workflow in a single system.
+The idea is to reduce manual coordination and provide better visibility into orders, deliveries, drivers, and shipment status.
+Key aspects:
+Order and shipment management
+Delivery assignment
+Driver/rider management
+Shipment status tracking
+Delivery workflow management
+Real-time or near-real-time tracking capabilities
+Operational dashboard for monitoring logistics activities
+N8N Agents :
+I have a hands on experience on Automation n8n agents, I have developed n8n agents regarding college and student uses
+1. NAAC AI Agent System
+An intelligent n8n automation platform using multiple GPT-4o agents to handle every aspect of NAAC accreditation, from document preparation to score prediction. A Master Orchestrator routes each query to the right specialist among 9 experts and compiles a final report.
+2. NIRF Agent
+A NIRF Ranking Automation System on n8n that automates everything from raw college data collection to final portal submission. It eliminates manual chasing of 10+ departments and manual calculations across 5 ranking parameters.
+3. NBA (College Intelligence Platform)
+A Multi-Level AI Agent System on n8n with 6 specialized sub-agents that understand and route student/faculty/admin queries (fees, attendance, hostel, etc.). It also tracks attendance, manages faculty, predicts dropouts, and prepares NBA accreditation reports automatically.
+4. AICTE (Master Intelligence Platform)
+An AI-powered college command center on n8n that routes admin/principal/HOD questions to the right AI expert among 8 specialized officers. It handles AICTE compliance reporting, parent attendance alerts, scholarship deadline tracking, and document drafting.
+5. Curriculum Gap Analyzer
+A fully automated, multi-agent n8n system that analyzes a college's curriculum against IITs/NITs and industry demands. It runs 5 specialist agents (auditor, analyst, benchmarker, advisor, report writer) to deliver a complete action plan in minutes — directly supporting NAAC/NBA curriculum revision needs.
+6. Faculty Appraisal
+A 9-workflow AI-powered automation system for faculty appraisals, run by a Main Orchestrator that triggers monthly or on-demand. It automates data collection, scoring, AI analysis, and report delivery — supporting accreditation fairness and audit requirements.
+7. Faculty Workload Balancer (FWB)
+An n8n agentic AI system that automatically tracks faculty workload to catch over/under-staffing before it causes problems. It enforces UGC compliance hour limits and detects timetable conflicts before an inspector does — directly protecting NAAC credibility.
+Remaining Workflows
+8. Board Advisor AI
+An AI-powered governance assistant for college boards, built on n8n. When asked a strategic question, it instantly activates 8 specialized AI expert agents that analyze it from different angles and synthesize a unified, board-ready report.
+9. Analysing Industry Trends (EduInsight India)
+A workflow triggered by one API call that deploys 6 AI agents to research different dimensions of industry trends, then a 7th master agent synthesizes the findings. It delivers a boardroom-ready report via email, WhatsApp, and Slack within minutes.
+10. Admission AI Multiagent
+An AI Admissions Automation System built on n8n that addresses delayed lead follow-ups in college admissions. It automates calling, emailing, and document-chasing so counselors convert more inquiries.
+11. Educational AI Agent
+A 10-agent AI ecosystem for college management, with one Orchestrator routing student queries to 9 specialist department agents. It works 24/7, instantly directing each query to the right agent like an always-available receptionist.
+12. InternConnect India (Finding Internship Opportunities)
+An automated AI pipeline that takes a student's profile as input and runs 8 specialized AI agents in sequence. It finds, ranks, and helps students apply to internships — acting as a 24/7 career counselor, search engine, and interview coach.
+13. Job Search Automation
+An automated job application assistant that monitors LinkedIn job listings via RSS and extracts job details using AI. It rates job matches against a resume and generates custom cover letters.
+14. Market Research Agent
+An AI-powered routing agent that receives a natural language query (e.g. "Find Gymshark's LinkedIn"). It extracts the company/person name, calls the correct sub-workflow (LinkedIn or Instagram scraper), and returns the scraped profile data.
+15. Marketing Agent
+An AI-powered marketing content generation system that takes user input via webhook and scrapes Google and Instagram for relevant content. It then analyzes and summarizes the gathered data into marketing material.
+16. Content Creator Agent
+An AI agent that writes blog posts by searching the web. It receives a topic, searches via the Tavily API, then uses GPT-4 to write and return an HTML-formatted, cited blog post.
+17. Newsletter Automation
+An automated AI newsletter generator that runs on a weekly schedule and researches a topic using the Tavily API. AI agents then plan, write, and edit the newsletter content automatically.
+18. Carousel & Slides Automation
+An automated social media content creation and publishing system. It generates motivational quote carousel ideas with AI, creates visuals via the Blotato API, and publishes them automatically to 8+ social platforms.
+19. Facebook Ad Remixer Agent
+A PPC competitive intelligence agent that scrapes competitor Google Ads. It analyzes the ad copy with AI and generates optimized ad images for remixing.
+20. Faceless Video Maker
+An automated viral video generation system ("Baby Pods" workflow). It generates unique video ideas, creates podcast-style audio monologues, and generates matching baby character images.
+21. Cold Email Automation
+A cold email personalization automation that takes an Apollo.io URL as input, scrapes lead data via Apify, and stores leads in Google Sheets. It then generates personalized icebreakers using OpenAI.
+22. Ice Breaker Agent (Cold Outreach Personalization System)
+A lead generation and personalization workflow that scrapes LinkedIn profiles and analyzes prospect websites. It uses AI to summarize and personalize content, generating deeply tailored cold email openers saved to Google Sheets.
+23. Meeting No-Show Prevention Workflow
+An n8n workflow that automatically manages meeting bookings by enriching lead data and sending confirmation requests via email and SMS. It follows up with non-responders and cancels meetings if no confirmation is received.
+24. Complete n8n WhatsApp AI Agent ("Sam")
+A multi-modal WhatsApp AI assistant that accepts text, voice, and image messages. It processes each input type differently using GPT-4 and remembers conversation history.
+25. Customer Support Agent
+A multi-pathway N8N support automation handling community support via three flows: New Post (AI responds to posts), Status Check (updates resolution status), and Manual Resolution (marks posts solved).
+26. Email Agent
+A Gmail-based AI email assistant that can send emails, create drafts, and reply to emails. It also retrieves, filters emails, and manages labels.
+27. Contact Agent
+An AI-powered contact management system that accepts natural language queries. It searches, adds, or updates contacts in Airtable and returns responses in plain English.
+28. Invoice Agent
+An intelligent invoice processing system that receives invoice images via Telegram and extracts text using OCR. It parses the invoice data, stores it in Google Sheets, and saves the original to Google Drive.
+29. Memory Agent
+A memory-enhanced chatbot that receives chat messages and retrieves past memories about the user from Airtable. It uses those memories for personalized responses and saves new important information while maintaining context via a sliding window.
+30. Chat with Docs Agent
+A document Q&A chat agent ("Chat with docs – 5minAI New version") built on n8n and Supabase storage. It lists/retrieves uploaded documents and lets users chat with their content via AI.
+Claude code : 
+And I have a hands on experience on Claude code with the agent teams and skills, I have well known about how to use the Claude skills and how to create a perfect skills and Claude Automation also and I have an knowledge about  Api keys, large language models and I have created fullstack skills from the Claude code
+Lovable + N8N agents :
+I have worked on fullstack application using this tech stack I have worked frontend as lovable AI Tools with react and vite JS and Backend as N8N agents, this help to instead of connecting backend with code we can connect with n8n agents with no code for some problems 
+All In One chat Bot 
+This chatbot will feature to use for all the queries of the people it will answer immediately and it clears the doubt for the people's and it used for research purpose also 
+Prompt Enhancer  
+ 
+I have created a prompt enhancer application to enhance the prompt which the users provide it will follows prompt engineering methodologies improve the prompt using Groq LLM 
+API CHECKER 
+This app I havhavedevelooed to check whether the given apis are working or not 
+Custom GPT creation :
+I have well known about how to create  Custom gpt creation I have experience on creating custom gpt using Antigravity This will used for student dedicated subject GPT for their learning and doubt clearing session we can create for student and it also used for faculty  for researching for their notes.
+I have created doubt clearing specifically for data analysts it clears all the doubt for the students who focus on career of data analytics 
+And I have prompt creator Gpt it requires the context from the users and their purpose based on that it will create the prompt as per prompt engineering structure 
+Prompt Engineering :
+I have an knowledge about prompt engineering like how to draft a prompt and how to makes the prompt to next level by gathering information make it to next level and I have knowledge about the context engineering how to provide the context to the AI for what we actually want
+System and processing :
+I have well known about how to create the the system and process using AI, if we have any repeatative work we can easily make it as AI Automation by screen capturing every work you manually doing and make it a prompt that actually needs to extract accurate info how the works done and use AI for take the response and make it as Automation engine in Claude, n8n or any other platform which is used for automating
+Apart from academics and projects, I have been a finalist in multiple hackathons, including MSME Hackathon, SAP Hackathon, CATCH 2024 & 2025, and EDU-HACK INSPIRE. I have also presented research papers at symposiums and served as an Event Core Member of the AInnovat Innovators Club and Anti-Ragging Campaign Leader at my college.
+I continuously enhance my skills through certifications such as NPTEL Cloud Computing, NPTEL Java Programming, 
+You can view my portfolio at: https://modern-portfo-ygiv.vercel.app/
+My goal is to leverage my expertise in AI, Machine Learning, Full Stack Development, and emerging technologies to build impactful solutions and contribute to innovative organizations while continuously learning and growing as a technology professional.

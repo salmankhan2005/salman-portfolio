@@ -1,0 +1,19 @@
+{
+  "degree": "Bachelor of Technology (B.Tech)",
+  "specialization": "Artificial Intelligence & Data Science",
+  "institution": "Mahendra Engineering College",
+  "location": "Tamil Nadu, India",
+  "duration": "2022 - 2026 (Final Year)",
+  "cgpa": "8.72 / 10.0",
+  "academic_achievements": [
+    "Published research paper on ML-Based Edge Home Security Systems",
+    "Finalist in MSME Hackathon, SAP Hackathon, CATCH 2024 & 2025, and EDU-HACK INSPIRE",
+    "Event Core Member of AInnovat Innovators Club",
+    "Anti-Ragging Campaign Student Leader"
+  ],
+  "certifications": [
+    "NPTEL Certified in Cloud Computing",
+    "NPTEL Certified in Java Programming",
+    "Full-Stack & ML Specializations (DeepLearning.AI / Coursera)"
+  ]
+}

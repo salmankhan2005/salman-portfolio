@@ -1,0 +1,67 @@
+{
+  "categories": [
+    {
+      "name": "Artificial Intelligence & LLMs",
+      "items": [
+        "FunctionGemma & Gemma 3",
+        "Large Language Models (GPT-4o, Claude 3.5, Groq, Gemini)",
+        "Prompt Engineering & Context Engineering",
+        "Multi-Agent Architectures (n8n, LangChain, Orchestration)",
+        "Fine-tuning, Transformers & Tokenizers",
+        "Retrieval-Augmented Generation (RAG)"
+      ]
+    },
+    {
+      "name": "Machine Learning & Computer Vision",
+      "items": [
+        "PyTorch",
+        "TensorFlow",
+        "OpenCV",
+        "YOLO (Real-time Object Detection)",
+        "Convolutional Neural Networks (CNNs)",
+        "Scikit-Learn",
+        "Predictive Modeling & Anomaly Detection"
+      ]
+    },
+    {
+      "name": "Full-Stack Web Development",
+      "items": [
+        "React.js & Vite",
+        "Next.js",
+        "JavaScript (ES6+) & TypeScript",
+        "Python (FastAPI, Flask)",
+        "Node.js",
+        "Tailwind CSS & Vanilla CSS (Design Systems)",
+        "REST APIs & Webhooks",
+        "Firebase & PostgreSQL / SQL"
+      ]
+    },
+    {
+      "name": "Edge AI, IoT & Systems",
+      "items": [
+        "Raspberry Pi 4",
+        "Edge Device Inference",
+        "IoT Sensors & Actuators",
+        "MQTT & Serial Protocols",
+        "Hardware-Software Interfacing"
+      ]
+    },
+    {
+      "name": "Developer Tools & Automation",
+      "items": [
+        "n8n (Autonomous Workflows)",
+        "Claude Code Agent Teams & Skills",
+        "Git & GitHub Actions",
+        "Vercel & Cloud Deployment",
+        "Docker & Linux Environments",
+        "EmailJS Client-Side SMTP Relay"
+      ]
+    }
+  ],
+  "top_specialties": [
+    "Autonomous Agentic Workflows",
+    "Open-Source LLM Deployment & Tool Calling",
+    "Full-Stack AI Web Apps",
+    "Edge Computer Vision"
+  ]
+}

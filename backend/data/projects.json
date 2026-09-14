@@ -1,0 +1,102 @@
+[
+  {
+    "id": "ai-resume-builder",
+    "name": "AI Resume Builder (Spark)",
+    "category": "AI Applications",
+    "description": "Full-stack web application enabling users to generate professional, ATS-optimized resumes using AI. Auto-formats content into clean templates and reduces resume creation time from hours to minutes.",
+    "stack": ["React", "FastAPI / Node", "OpenAI / LLM API", "Tailwind CSS", "Vercel"],
+    "live_url": "https://remix-of-ai-resume-spark-main.vercel.app",
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "ai-course-generator",
+    "name": "AI Course Generator",
+    "category": "EdTech & Learning",
+    "description": "AI-powered educational curriculum generator that auto-creates structured modular courses and lessons from any user-provided topic. Used by educators and learners to speed up learning path creation.",
+    "stack": ["React", "Next.js", "Gemini / Groq LLM", "Vercel"],
+    "live_url": "https://project-six-delta-36.vercel.app",
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "ai-career-coach",
+    "name": "AI Career Coach & Path Architect",
+    "category": "Autonomous AI",
+    "description": "Full-stack AI platform offering conversational career advice, real-time resume analysis, skill-gap identification, personalized roadmaps, and automated job matching using LLM APIs and persistent sessions.",
+    "stack": ["React", "Next.js", "Python FastAPI", "Transformers", "Vercel"],
+    "live_url": "https://ai-career-coach-full-stack.vercel.app",
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "ai-interview-coach",
+    "name": "AI Mock Interview Coach",
+    "category": "NLP & AI Simulation",
+    "description": "Real-time AI mock interview simulator that questions candidates, analyzes audio/text responses for confidence, tone, and technical correctness, and delivers instant actionable feedback.",
+    "stack": ["React", "NLP", "Speech Recognition", "FastAPI", "Vercel"],
+    "live_url": "https://ai-i-nterview.vercel.app",
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "coure-brown",
+    "name": "AI-Powered Adaptive Learning Platform",
+    "category": "EdTech & Learning",
+    "description": "Intelligent e-learning management system with AI course recommendations, adaptive learning paths, and personalized content delivery based on real-time student performance.",
+    "stack": ["React", "Node.js", "LLM APIs", "Vercel"],
+    "live_url": "https://coure-brown.vercel.app",
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "finova",
+    "name": "Finova — Intelligent Financial Analytics",
+    "category": "FinTech & Analytics",
+    "description": "Modern personal finance and management application that ingests raw transaction data, categorizes spending, tracks budgets, and provides predictive visual intelligence on personal cash flow.",
+    "stack": ["React", "Data Analytics", "Chart.js / Recharts", "Firebase"],
+    "live_url": null,
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": false
+  },
+  {
+    "id": "image-diagnosis-assistant",
+    "name": "Medical Image Diagnosis Assistant",
+    "category": "Computer Vision / Health AI",
+    "description": "Computer vision diagnostic decision-support system analyzing uploaded medical radiographs for potential anomalies, providing visual region segmentation and responsible explanatory reports.",
+    "stack": ["PyTorch", "OpenCV", "Convolutional Neural Networks", "Flask", "React"],
+    "live_url": null,
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": false
+  },
+  {
+    "id": "iot-home-security",
+    "name": "ML-Based IoT Smart Security System",
+    "category": "Edge AI & IoT",
+    "description": "Raspberry Pi & camera-powered smart surveillance architecture executing on-device machine learning for anomaly detection, intrusion alerting, and automated notification dispatch. Published research paper.",
+    "stack": ["Python", "OpenCV", "YOLO", "Raspberry Pi", "IoT Sensors", "MQTT"],
+    "live_url": null,
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "n8n-naac-agent",
+    "name": "NAAC Multi-Agent Accreditation Ecosystem",
+    "category": "Enterprise Agentic Automation",
+    "description": "Autonomous n8n automation ecosystem employing 9 specialist AI agents with a master orchestrator to automate document collation, metric scoring, and predictive compliance reporting for NAAC college audits.",
+    "stack": ["n8n", "GPT-4o", "Multi-Agent Systems", "Webhooks", "Google Sheets"],
+    "live_url": null,
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": true
+  },
+  {
+    "id": "n8n-nirf-agent",
+    "name": "NIRF Ranking Automation System",
+    "category": "Enterprise Agentic Automation",
+    "description": "End-to-end multi-department data collection and validation agent on n8n that eliminates manual collation across 10+ college departments and automates complex calculation of the 5 NIRF ranking parameters.",
+    "stack": ["n8n", "OpenAI API", "REST APIs", "Airtable"],
+    "live_url": null,
+    "github_url": "https://github.com/salmankhan2005",
+    "featured": false
+  }
+]
