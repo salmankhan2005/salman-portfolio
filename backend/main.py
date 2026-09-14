@@ -47,13 +47,13 @@ class SendEmailRequest(BaseModel):
     subject: str
     message: str
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {
         "status": "online",
         "service": "Salman Portfolio AI Assistant Backend",
-        "model": orchestrator.model.__class__.__name__ if orchestrator.is_loaded else "FunctionGemma Hybrid Engine",
-        "device": orchestrator.device
+        "model": orchestrator.model_name if hasattr(orchestrator, 'model_name') else "FunctionGemma Hybrid Engine",
+        "device": getattr(orchestrator, 'device', 'CPU/GPU')
     }
 
 @app.get("/api/health")
