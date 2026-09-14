@@ -5834,59 +5834,210 @@ body::before {
   animation: whiteFlash 0.7s ease forwards;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .splash-portrait-wrap {
-    width: 65%;
-    opacity: 0.5;
+/* ==========================================================================
+   DYNAMIC RESPONSIVE VIEWPORT SYSTEM (Mobile, Tablet, Laptop, Ultra-Wide)
+   ========================================================================== */
+
+/* ── 1. Ultra-Wide Displays (min-width: 1600px) ────────────────────────── */
+@media (min-width: 1600px) {
+  :root {
+    --container-width: 1680px;
   }
-  .splash-typography-block {
-    left: 2.5rem;
-    bottom: 7rem;
+  .hero-editorial-grid {
+    grid-template-columns: 1.2fr 1.4fr 1fr;
+    gap: 3rem;
   }
-  .splash-name-first {
-    font-size: clamp(3rem, 10vw, 5rem);
-  }
-  .splash-name-last {
-    font-size: clamp(3.5rem, 12vw, 6rem);
-  }
-  .splash-progress-block {
-    right: 2.5rem;
-    min-width: 200px;
-  }
-  .splash-clock-block {
-    left: 2.5rem;
-  }
-  .splash-meta-left {
-    left: 1rem;
-  }
-  .splash-corner-br {
-    right: 2.5rem;
-  }
-  .splash-monogram {
-    right: 2.5rem;
-  }
-  .splash-title-row {
-    flex-wrap: wrap;
-    gap: 0.8rem;
+  .systems-matrix {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 600px) {
-  .splash-portrait-wrap {
-    width: 100%;
-    opacity: 0.35;
+/* ── 2. Standard Laptops & Tablets (max-width: 1200px) ─────────────────── */
+@media (max-width: 1200px) {
+  .hero-editorial-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
   }
+  .hero-right-editorial {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .hero-quote-block {
+    grid-column: span 2;
+  }
+  .hero-btn-row {
+    grid-column: span 2;
+  }
+  .systems-matrix {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .strip-four-columns {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* ── 3. Tablets & iPads (max-width: 900px) ────────────────────────────── */
+@media (max-width: 900px) {
+  .page-container, .container, .system-container {
+    padding: 0 1.25rem;
+  }
+
+  .hero-editorial-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .hero-right-editorial {
+    grid-column: span 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-quote-block, .hero-btn-row {
+    grid-column: span 1;
+  }
+  .portrait-organic-wrap {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .strip-layout-wrapper {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .strip-left-label {
+    writing-mode: horizontal-tb;
+    transform: none;
+    margin-bottom: 1rem;
+  }
+  .strip-four-columns {
+    grid-template-columns: 1fr;
+  }
+  .extended-cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Splash Screen responsiveness */
+  .splash-typography-block {
+    left: 2rem;
+    bottom: 6rem;
+  }
+  .splash-clock-block {
+    left: 2rem;
+    top: 2rem;
+  }
+  .splash-progress-block {
+    right: 2rem;
+  }
+  .splash-monogram {
+    right: 2rem;
+    top: 2rem;
+  }
+}
+
+/* ── 4. Mobile Devices & Small Screens (max-width: 600px) ─────────────── */
+@media (max-width: 600px) {
+  .page-container, .container, .system-container {
+    padding: 0 1rem;
+  }
+
+  .hero-giant-title {
+    font-size: clamp(3.2rem, 15vw, 4.8rem);
+  }
+  .hero-role-subhead {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+  .hero-role-caption {
+    font-size: 0.95rem;
+  }
+  .hero-action-buttons-row {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-hero-resume-primary, .btn-hero-dossier-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero-stats-quick-bar {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.75rem;
+  }
+  .quick-stat-lbl {
+    font-size: 0.55rem;
+  }
+
+  .systems-matrix {
+    grid-template-columns: 1fr;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+  .section-heading-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* ChatBot Window on Mobile */
+  .ai-chatbot-window {
+    width: calc(100vw - 1.5rem) !important;
+    right: 0.75rem !important;
+    left: 0.75rem !important;
+    bottom: 5rem !important;
+    height: clamp(480px, 75vh, 600px) !important;
+    border-radius: 12px !important;
+  }
+
+  /* Splash Screen Mobile Layout */
   .splash-meta-left {
     display: none;
   }
   .splash-typography-block {
-    left: 1.5rem;
-    bottom: 9rem;
+    left: 1.25rem;
+    bottom: 8rem;
+    right: 1.25rem;
+  }
+  .splash-name-first {
+    font-size: clamp(2.8rem, 14vw, 4.2rem);
+  }
+  .splash-name-last {
+    font-size: clamp(3.2rem, 16vw, 5rem);
+  }
+  .splash-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  .splash-title-divider {
+    display: none;
+  }
+  .splash-clock-block {
+    left: 1.25rem;
+    top: 1.5rem;
+    padding: 0.5rem 0.85rem;
+  }
+  .splash-odometer-digit {
+    font-size: 1.2rem;
+  }
+  .splash-odometer-ms {
+    font-size: 1rem;
+  }
+  .splash-monogram {
+    right: 1.25rem;
+    top: 1.5rem;
+    width: 42px;
+    height: 42px;
   }
   .splash-progress-block {
-    right: 1.5rem;
-    left: 1.5rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 2.2rem;
     min-width: unset;
   }
+  .splash-corner-br {
+    display: none;
+  }
 }
+
