@@ -2,10 +2,8 @@
 title: Salman Khan AI Model Demo
 emoji: ⚡
 colorFrom: yellow
-colorTo: black
-sdk: gradio
-sdk_version: 4.25.0
-app_file: app.py
+colorTo: gray
+sdk: static
 pinned: false
 license: mit
 ---
