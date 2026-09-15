@@ -8,34 +8,104 @@
  * 4. Grounded Conversational Semantic Brain (100% Reliable Offline/Online fallback)
  */
 
-const GROUNDED_CONTEXT = `### CONTEXT ABOUT THIS PORTFOLIO OWNER:
-Name: Salman Khan D (AI Engineer & Full-Stack Developer)
-Preferred Name: Salman Khan
-Location: Tamil Nadu, India
-Education: B.Tech Graduate in Artificial Intelligence & Data Science from Mahendra Engineering College (CGPA: 8.72 / 10.0, recently completed degree 3 months ago).
-Core Skills: PyTorch, TensorFlow, OpenCV, YOLOv8, Transformers, LLMs, RAG, n8n Orchestration (30+ workflows), React.js, Vite, Next.js, Node.js, Python FastAPI, PostgreSQL, Supabase, Raspberry Pi 4 Edge ML.
-Experience:
-• Machine Learning & Data Science Intern at Yellowmatics (Trained predictive ML and Computer Vision models using PyTorch & Flask for real-time inference APIs).
-• Freelance Tech & Creative Lead at Strikkerz Team (Led React applications, UI/UX systems, and cloud deployments on Vercel).
-• Published AI Researcher: Author of a peer-reviewed research paper on IoT Edge ML home security & anomaly detection on Raspberry Pi 4.
-Top Production Projects Built:
-1. AI Resume Builder (Spark): ATS-optimized resume builder with AI suggestions. Live demo: https://remix-of-ai-resume-spark-main.vercel.app
-2. AI Career Coach: Skill gap analysis platform with personalized learning roadmaps. Live demo: https://ai-career-coach-full-stack.vercel.app
-3. AI Course Generator: Modular syllabus generator with interactive lessons. Live demo: https://project-six-delta-36.vercel.app
-4. AI Mock Interview Coach: NLP-powered audio/text mock interview feedback. Live demo: https://ai-i-nterview.vercel.app
-5. AI Adaptive Learning Platform: Personalized e-learning paths. Live demo: https://coure-brown.vercel.app
-6. NAAC & NIRF 9-Agent Multi-Agent Swarm on n8n: Automated institutional compliance & ranking engines.
-7. ML Home Security & Anomaly Detection: Edge AI on Raspberry Pi with published research.
-8. Finova: Intelligent financial analytics & cash flow manager.
-Availability: Graduated & Actively open for immediate full-time onboarding (AI Engineer, ML Engineer, Full-Stack Developer roles).
-Contact: Email: samitha0786@gmail.com, Phone: +91 93422 98949.
-Resume Link: https://drive.google.com/file/d/1wTKMmKdFuPWwoiJqUITRqckhVwdTBYDn/view
+// ==============================================================================
+// 🛡️ SECURITY GUARDRAILS & DATA PRIVACY ENGINE
+// ==============================================================================
 
-### INSTRUCTIONS:
-You are Salman Khan's personal, intelligent AI Representative on his engineering portfolio website.
-Always refer to Salman Khan D (the AI & Data Science engineer from Mahendra Engineering College), NOT any actor.
-Speak warmly, conversationally, and accurately in first-person representative voice ("Salman...", "He...", "We...").
-Answer questions directly and naturally. If asked to send an email or contact him, encourage connecting directly!`;
+// Input Guardrails: Detect prompt injection / jailbreaks
+export function applyInputGuardrails(userQuery) {
+  const text = userQuery.trim();
+  const lower = text.toLowerCase();
+
+  // Jailbreak & System Override Protection
+  const injectionPatterns = [
+    /ignore (all|previous|system) (instructions|prompts|rules)/i,
+    /disregard system (prompt|instructions)/i,
+    /you are now (an?|in) (unrestricted|jailbroken|dan|developer mode)/i,
+    /reveal (your|the) (secret|system prompt|api key|source code)/i
+  ];
+
+  for (const pattern of injectionPatterns) {
+    if (pattern.test(lower)) {
+      return {
+        safe: false,
+        reason: "Security Guardrail Triggered: System override attempts are blocked.",
+        fallbackResponse: "As Salman Khan's AI Representative, I strictly follow engineering guardrails and portfolio scope. How can I assist you with Salman's projects or skills?"
+      };
+    }
+  }
+
+  return { safe: true, text: text };
+}
+
+// Output Guardrails: Ensure responses remain bounded within portfolio scope
+export function applyOutputGuardrails(responseText) {
+  if (!responseText || typeof responseText !== 'string') return responseText;
+  let cleaned = responseText.trim();
+  // Ensure model does not hallucinate non-existent actor identities
+  cleaned = cleaned.replace(/Bollywood actor/gi, "AI Engineer");
+  return cleaned;
+}
+
+// ==============================================================================
+// 📚 RAG RETRIEVAL-AUGMENTED GENERATION ENGINE (Modular Privacy Chunks)
+// ==============================================================================
+
+const RAG_KNOWLEDGE_MODULES = {
+  bio: `NAME & EDUCATION: Salman Khan D, B.Tech in AI & Data Science from Mahendra Engineering College (CGPA: 8.72 / 10.0, completed degree recently 3 months ago). Location: Tamil Nadu, India. Open for immediate onboarding. Contact: samitha0786@gmail.com, +91 93422 98949.`,
+  
+  projects: `TOP AI PROJECTS:
+1. AI Resume Builder (Spark): ATS-optimized resume builder with AI suggestions (https://remix-of-ai-resume-spark-main.vercel.app).
+2. AI Career Coach: Skill gap analysis platform with 8-semester roadmaps (https://ai-career-coach-full-stack.vercel.app).
+3. AI Course Generator: Modular syllabus generator with interactive lessons (https://project-six-delta-36.vercel.app).
+4. AI Mock Interview Coach: NLP interview simulator with feedback (https://ai-i-nterview.vercel.app).
+5. NAAC/NIRF 9-Agent Swarms: Multi-agent compliance engines on n8n (sub-30ms execution).
+6. Edge Security: Published research paper on Raspberry Pi 4 ML anomaly detection.`,
+
+  skills: `TECHNICAL STACK:
+• Deep Learning & CV: PyTorch, TensorFlow, OpenCV, YOLOv8 object detection, CNNs, Anomaly Detection.
+• LLMs & Agents: Prompt engineering, Function Calling, RAG, n8n Orchestration (30+ workflows).
+• Full-Stack: React.js, Vite, Next.js, Node.js, Python FastAPI, PostgreSQL, Supabase, Tailwind CSS.`,
+
+  experience: `PROFESSIONAL EXPERIENCE:
+• Machine Learning Intern @ Yellowmatics: Trained predictive ML and Computer Vision models using PyTorch & Flask.
+• Freelance Tech Lead @ Strikkerz Team: Led React full-stack applications, UI/UX systems, Vercel deployments.
+• Published AI Researcher: Author of peer-reviewed paper on IoT Edge ML anomaly detection on Raspberry Pi 4.`
+};
+
+// RAG Retriever: Selects ONLY the relevant knowledge chunks for the user prompt
+export function retrieveRAGContext(userQuery) {
+  const lower = userQuery.toLowerCase();
+  const selectedModules = [];
+
+  // Default always includes basic bio
+  selectedModules.push(RAG_KNOWLEDGE_MODULES.bio);
+
+  if (
+    lower.includes('project') || lower.includes('built') || lower.includes('work') ||
+    lower.includes('app') || lower.includes('spark') || lower.includes('n8n') ||
+    lower.includes('resume') || lower.includes('career') || lower.includes('course') || lower.includes('interview')
+  ) {
+    selectedModules.push(RAG_KNOWLEDGE_MODULES.projects);
+  }
+
+  if (
+    lower.includes('skill') || lower.includes('stack') || lower.includes('tech') ||
+    lower.includes('pytorch') || lower.includes('python') || lower.includes('react') ||
+    lower.includes('fastapi') || lower.includes('yolo') || lower.includes('opencv') || lower.includes('rag')
+  ) {
+    selectedModules.push(RAG_KNOWLEDGE_MODULES.skills);
+  }
+
+  if (
+    lower.includes('experience') || lower.includes('intern') || lower.includes('yellowmatics') ||
+    lower.includes('strikkerz') || lower.includes('paper') || lower.includes('research')
+  ) {
+    selectedModules.push(RAG_KNOWLEDGE_MODULES.experience);
+  }
+
+  return selectedModules.join("\n\n");
+}
 
 // Helper: Check if running on localhost
 function isLocalhostEnv() {
@@ -64,7 +134,10 @@ async function queryLocalOllama(userMessage, history, customUrl = null) {
 
   if (endpoints.length === 0) return null;
 
-  const messages = [{ role: 'system', content: GROUNDED_CONTEXT }];
+  const ragContext = retrieveRAGContext(userMessage);
+  const systemPrompt = `You are Salman Khan D's personal, intelligent AI Representative on his engineering portfolio website.\n\nRELEVANT RAG KNOWLEDGE:\n${ragContext}`;
+
+  const messages = [{ role: 'system', content: systemPrompt }];
   if (history && history.length > 0) {
     for (const h of history.slice(-6)) {
       messages.push({
@@ -107,7 +180,7 @@ async function queryLocalOllama(userMessage, history, customUrl = null) {
         const data = await res.json();
         const content = data.message?.content?.trim();
         if (content && content.length > 5) {
-          return { text: content, model: 'Qwen 2.5 (Local GPU LLM)' };
+          return { text: applyOutputGuardrails(content), model: 'Qwen 2.5 (Local GPU LLM)' };
         }
       }
     } catch (err) {
@@ -117,9 +190,12 @@ async function queryLocalOllama(userMessage, history, customUrl = null) {
   return null;
 }
 
-// 2. Groq Cloud Ultra-Fast LLM API Client (Qwen 3.8 / Llama 3)
+// 2. Groq Cloud Ultra-Fast LLM API Client (Qwen 3.8 / Llama 3) with RAG & Privacy Guardrails
 async function queryGroqAPI(userMessage, history, apiKey) {
-  const formattedMessages = [{ role: 'system', content: GROUNDED_CONTEXT }];
+  const ragContext = retrieveRAGContext(userMessage);
+  const systemPrompt = `You are Salman Khan D's personal, intelligent AI Representative on his engineering portfolio website.\n\nRELEVANT RAG KNOWLEDGE:\n${ragContext}`;
+
+  const formattedMessages = [{ role: 'system', content: systemPrompt }];
   
   if (history && history.length > 0) {
     for (const h of history.slice(-6)) {
@@ -162,7 +238,7 @@ async function queryGroqAPI(userMessage, history, apiKey) {
         const content = data.choices?.[0]?.message?.content?.trim();
         if (content && content.length > 5) {
           return {
-            text: content,
+            text: applyOutputGuardrails(content),
             model: `Groq Cloud (${model})`
           };
         }
@@ -498,6 +574,17 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
  * 3. Grounded Semantic Conversational Brain
  */
 export async function getAIChatResponse(userMessage, history = [], userContact = {}) {
+  // 🛡️ Security Guardrails Check
+  const guardrailCheck = applyInputGuardrails(userMessage);
+  if (!guardrailCheck.safe) {
+    return {
+      reply: guardrailCheck.fallbackResponse,
+      tool_call: null,
+      action_card: null,
+      model: 'Security Guardrail'
+    };
+  }
+
   const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : (typeof process !== 'undefined' && process.env ? process.env : {});
   const groqKey = env.VITE_GROQ_API_KEY || env.GROQ_API_KEY;
   const geminiKey = env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY;
