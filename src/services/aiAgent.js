@@ -54,12 +54,15 @@ export function extractContactEntities(text) {
   };
 }
 
-// 1. Local Offline GPU LLM Direct Client (ONLY on localhost dev — never in production)
+// 1. Local Offline GPU LLM Direct Client (ONLY on localhost dev — uses downloaded Qwen 2.5)
 async function queryLocalOllama(userMessage, history) {
   if (!isLocalhostEnv()) return null; // Hard guard: never attempt on deployed cloud sites
 
-  // Only use the Vite proxy path (avoids CORS entirely)
-  const endpoint = '/ollama-api/api/chat';
+  const endpoints = [
+    '/ollama-api/api/chat',               // Vite Proxy (Bypasses CORS in Vite dev server)
+    'http://127.0.0.1:11434/api/chat',    // Direct port
+    'http://localhost:11434/api/chat'
+  ];
 
   const messages = [{ role: 'system', content: GROUNDED_CONTEXT }];
   if (history && history.length > 0) {
@@ -83,27 +86,29 @@ async function queryLocalOllama(userMessage, history) {
     }
   });
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+  for (const endpoint of endpoints) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: payload
-    });
-    clearTimeout(timeoutId);
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: payload
+      });
+      clearTimeout(timeoutId);
 
-    if (res.ok) {
-      const data = await res.json();
-      const content = data.message?.content?.trim();
-      if (content && content.length > 5) {
-        return { text: content, model: 'Qwen 2.5 (Local GPU LLM)' };
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.message?.content?.trim();
+        if (content && content.length > 5) {
+          return { text: content, model: 'Qwen 2.5 (Local GPU LLM)' };
+        }
       }
+    } catch (err) {
+      // Try next endpoint
     }
-  } catch (err) {
-    // Ollama not running locally
   }
   return null;
 }
@@ -471,7 +476,24 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
     };
   }
 
-  // 1. Try Render FastAPI Backend FIRST (primary AI source — works on all environments)
+  // 1. Localhost Environment: Query Local Downloaded Qwen 2.5 GPU LLM FIRST!
+  if (isLocalhostEnv()) {
+    try {
+      const localRes = await queryLocalOllama(userMessage, history);
+      if (localRes && localRes.text) {
+        return {
+          reply: localRes.text,
+          tool_call: null,
+          action_card: emailActionCard,
+          model: localRes.model
+        };
+      }
+    } catch (e) {
+      // Local Ollama offline
+    }
+  }
+
+  // 2. Query Render FastAPI Backend
   try {
     const backendRes = await queryBackendAPI(userMessage, history, backendUrl);
     if (backendRes && backendRes.text) {

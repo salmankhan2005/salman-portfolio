@@ -42,7 +42,7 @@ SYSTEM_PROMPT = f"""You are Salman Khan D's personal, intelligent, and articulat
 Speak warmly, conversationally, and accurately in first-person representative voice ("Salman...", "We...", "He...").
 
 Key Background Information:
-• Person: Salman Khan D, final-year B.Tech in Artificial Intelligence & Data Science at Mahendra Engineering College (CGPA: 8.72 / 10.0).
+• Person: Salman Khan D, B.Tech Graduate in Artificial Intelligence & Data Science from Mahendra Engineering College (CGPA: 8.72 / 10.0, recently completed degree 3 months ago).
 • Core Specialties: Deep Learning (PyTorch, OpenCV, YOLO object detection), LLMs & RAG architectures, Full-Stack Web Development (React, Vite, Next.js, Node.js, Python FastAPI), and Autonomous Multi-Agent Orchestration (30+ n8n workflows).
 • Industry Experience:
   - Machine Learning & Data Science Intern at Yellowmatics (trained predictive ML & CV models with PyTorch & Flask).
@@ -54,7 +54,7 @@ Key Background Information:
   3. AI Course Generator: Modular syllabus generator with interactive lessons. Live demo: https://project-six-delta-36.vercel.app
   4. AI Mock Interview Coach: NLP interview simulation platform. Live demo: https://ai-i-nterview.vercel.app
   5. NAAC/NIRF Multi-Agent Swarms: Automated institutional compliance systems on n8n.
-• Availability: Actively open to full-time AI Engineer, ML Engineer, and Full-Stack roles (Immediate joining).
+• Availability: Graduated & Actively open for immediate full-time onboarding (AI Engineer, ML Engineer, and Full-Stack roles).
 • Contact: Email samitha0786@gmail.com, Phone +91 93422 98949.
 
 Always answer questions naturally and conversationally, matching the tone and context of the user's inquiry."""
@@ -163,12 +163,12 @@ class LocalNeuralService:
                 "sender_email": sender_email
             }
 
-        # 1. Try Gemini Cloud LLM
-        llm_reply = self.query_gemini_api(user_message, history=history)
+        # 1. Try Local Downloaded Qwen 2.5 GPU LLM FIRST (Ollama)
+        llm_reply = self.query_ollama_llm(user_message, history=history)
 
-        # 2. Try Local Ollama LLM
+        # 2. Try Gemini Cloud LLM as secondary fallback
         if not llm_reply:
-            llm_reply = self.query_ollama_llm(user_message, history=history)
+            llm_reply = self.query_gemini_api(user_message, history=history)
 
         # 3. Conversational Semantic Fallback
         if not llm_reply:
@@ -225,7 +225,7 @@ class LocalNeuralService:
             else:
                 llm_reply = (
                     f"Hello! 👋 I'm Salman Khan's AI Representative.\n\n"
-                    f"Salman is a final-year B.Tech AI & Data Science engineer (CGPA: 8.72) with 15+ production AI applications and 30+ autonomous n8n workflows. "
+                    f"Salman is a B.Tech AI & Data Science graduate (CGPA: 8.72, recently completed degree) with 15+ production AI applications and 30+ autonomous n8n workflows. "
                     f"He is actively seeking full-time AI Engineer, ML, and Full-Stack roles.\n\n"
                     f"How can I help you? You can ask about his projects, technical stack, experience, or say *'Send Salman an email'* to connect directly!"
                 )
