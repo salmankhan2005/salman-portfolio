@@ -1,18 +1,18 @@
 /**
  * Salman Khan Portfolio — Intelligent Conversational AI Engine
  * 
- * Direct Multi-Tier AI Architecture:
- * 1. Local Offline GPU LLM (Ollama - Qwen 2.5 0.5B via Vite Proxy & Direct Port) -> ZERO API KEYS NEEDED!
- * 2. Local/Remote FastAPI Backend (http://127.0.0.1:8000)
- * 3. Optional Cloud Gemini API (if key provided)
- * 4. Grounded Conversational Dialogue Brain
+ * Multi-Tier AI Architecture (priority order):
+ * 1. Render FastAPI Backend (https://salman-portfolio-ai-backend.onrender.com)
+ * 2. Google Gemini API (if VITE_GEMINI_API_KEY is set)
+ * 3. Local Ollama GPU LLM (ONLY on localhost dev environment)
+ * 4. Grounded Conversational Semantic Brain (100% Reliable Offline/Online fallback)
  */
 
 const GROUNDED_CONTEXT = `### CONTEXT ABOUT THIS PORTFOLIO OWNER:
 Name: Salman Khan D (AI Engineer & Full-Stack Developer)
 Preferred Name: Salman Khan
 Location: Tamil Nadu, India
-Education: Final-year B.Tech in Artificial Intelligence & Data Science at Mahendra Engineering College (CGPA: 8.72 / 10.0).
+Education: B.Tech Graduate in Artificial Intelligence & Data Science from Mahendra Engineering College (CGPA: 8.72 / 10.0, recently completed degree 3 months ago).
 Core Skills: PyTorch, TensorFlow, OpenCV, YOLOv8, Transformers, LLMs, RAG, n8n Orchestration (30+ workflows), React.js, Vite, Next.js, Node.js, Python FastAPI, PostgreSQL, Supabase, Raspberry Pi 4 Edge ML.
 Experience:
 • Machine Learning & Data Science Intern at Yellowmatics (Trained predictive ML and Computer Vision models using PyTorch & Flask for real-time inference APIs).
@@ -27,7 +27,7 @@ Top Production Projects Built:
 6. NAAC & NIRF 9-Agent Multi-Agent Swarm on n8n: Automated institutional compliance & ranking engines.
 7. ML Home Security & Anomaly Detection: Edge AI on Raspberry Pi with published research.
 8. Finova: Intelligent financial analytics & cash flow manager.
-Availability: Actively open to full-time AI Engineer, ML Engineer, and Full-Stack Developer roles (Immediate joining).
+Availability: Graduated & Actively open for immediate full-time onboarding (AI Engineer, ML Engineer, Full-Stack Developer roles).
 Contact: Email: samitha0786@gmail.com, Phone: +91 93422 98949.
 Resume Link: https://drive.google.com/file/d/1wTKMmKdFuPWwoiJqUITRqckhVwdTBYDn/view
 
@@ -36,6 +36,13 @@ You are Salman Khan's personal, intelligent AI Representative on his engineering
 Always refer to Salman Khan D (the AI & Data Science engineer from Mahendra Engineering College), NOT any actor.
 Speak warmly, conversationally, and accurately in first-person representative voice ("Salman...", "He...", "We...").
 Answer questions directly and naturally. If asked to send an email or contact him, encourage connecting directly!`;
+
+// Helper: Check if running on localhost
+function isLocalhostEnv() {
+  if (typeof window === 'undefined') return true; // Node.js test environment
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host === '';
+}
 
 // Helper: Extract name and email from text if present
 export function extractContactEntities(text) {
@@ -47,13 +54,12 @@ export function extractContactEntities(text) {
   };
 }
 
-// 1. Local Offline GPU LLM Direct Client (Zero API Keys Needed!)
+// 1. Local Offline GPU LLM Direct Client (ONLY on localhost dev — never in production)
 async function queryLocalOllama(userMessage, history) {
-  const endpoints = [
-    '/ollama-api/api/chat',               // 1. Vite Proxy (Bypasses all browser CORS restrictions!)
-    'http://127.0.0.1:11434/api/chat',    // 2. Direct Ollama port
-    'http://localhost:11434/api/chat'     // 3. Localhost alias
-  ];
+  if (!isLocalhostEnv()) return null; // Hard guard: never attempt on deployed cloud sites
+
+  // Only use the Vite proxy path (avoids CORS entirely)
+  const endpoint = '/ollama-api/api/chat';
 
   const messages = [{ role: 'system', content: GROUNDED_CONTEXT }];
   if (history && history.length > 0) {
@@ -77,44 +83,37 @@ async function queryLocalOllama(userMessage, history) {
     }
   });
 
-  for (const endpoint of endpoints) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: controller.signal,
-        body: payload
-      });
-      clearTimeout(timeoutId);
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: payload
+    });
+    clearTimeout(timeoutId);
 
-      if (res.ok) {
-        const data = await res.json();
-        const content = data.message?.content?.trim();
-        if (content && content.length > 5) {
-          console.log(`[Salman AI] Responded via Local GPU LLM (${endpoint})`);
-          return {
-            text: content,
-            model: 'Qwen 2.5 (Local GPU LLM)'
-          };
-        }
+    if (res.ok) {
+      const data = await res.json();
+      const content = data.message?.content?.trim();
+      if (content && content.length > 5) {
+        return { text: content, model: 'Qwen 2.5 (Local GPU LLM)' };
       }
-    } catch (err) {
-      // Try next endpoint
     }
+  } catch (err) {
+    // Ollama not running locally
   }
   return null;
 }
 
-// 2. Local/Remote Backend API Client
+// 2. Render FastAPI Backend Client (primary cloud AI source)
 async function queryBackendAPI(userMessage, history, backendUrl) {
-  const endpoints = [
-    `${backendUrl}/api/chat`,
-    '/backend-api/api/chat',
-    'http://127.0.0.1:8000/api/chat'
-  ];
+  // On localhost, also try the Vite proxy path as fallback
+  const endpoints = isLocalhostEnv()
+    ? [`${backendUrl}/api/chat`, '/backend-api/api/chat']
+    : [`${backendUrl}/api/chat`];
 
   const historyPayload = (history || []).slice(-6).map(m => ({
     role: m.role,
@@ -157,7 +156,7 @@ async function queryBackendAPI(userMessage, history, backendUrl) {
   return null;
 }
 
-// 3. Google Gemini Cloud LLM Direct Client (Optional)
+// 4. Google Gemini Cloud LLM Direct Client (Optional)
 async function queryGeminiAPI(userMessage, history, apiKey) {
   const formattedContents = [];
   
@@ -213,7 +212,7 @@ async function queryGeminiAPI(userMessage, history, apiKey) {
   return null;
 }
 
-// 4. Intelligent Grounded Conversational Neural Brain
+// 5. Intelligent Grounded Conversational Neural Brain
 export function generateSemanticResponse(userMessage, history = [], userContact = {}) {
   const text = userMessage.trim();
   const lower = text.toLowerCase();
@@ -292,7 +291,7 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
     const greetingResponses = [
       `Hey there! 👋 Wonderful to meet you! I'm Salman Khan's personal AI Assistant.\n\nI can walk you through his **15+ production AI applications**, discuss his **PyTorch & YOLO deep learning stack**, review his **30+ autonomous n8n agent pipelines**, or help you schedule a chat with him.\n\nWhat would you like to dive into?`,
       `Hello! 👋 Welcome to Salman Khan's portfolio! I'm his AI representative, ready to answer questions about his AI engineering projects, Yellowmatics internship, published research, or availability for full-time roles.\n\nHow can I help you today?`,
-      `Hi there! 🌟 Great to have you here. Salman is a final-year B.Tech AI & Data Science engineer with hands-on experience building full-stack LLM apps and multi-agent workflows.\n\nFeel free to ask me anything about his work, or let me know if you'd like to reach out to him directly!`
+      `Hi there! 🌟 Great to have you here. Salman is a B.Tech AI & Data Science graduate (recently completed degree with 8.72 CGPA) with hands-on experience building full-stack LLM apps and multi-agent workflows.\n\nFeel free to ask me anything about his work, or let me know if you'd like to reach out to him directly!`
     ];
     reply = greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
     return { reply, action_card, model: 'Salman AI Brain' };
@@ -323,7 +322,7 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
     lower.includes('why hire') || lower.includes('why should') || lower.includes('strengths') ||
     lower.includes('why salman') || lower.includes('pitch') || lower.includes('stand out') || lower.includes('value')
   ) {
-    reply = `Here is why **Salman Khan** stands out as a high-impact engineering hire: 🌟\n\n1. **Proven Production Velocity (15+ Shipped AI Apps)**:\n   Unlike theorists, Salman ships end-to-end products—from ATS resume analyzers to multi-agent accreditation engines deployed on Vercel and cloud microservices.\n\n2. **Deep Learning + Modern Agentic AI Mastery**:\n   Solid foundation in PyTorch, TensorFlow, OpenCV, and YOLOv8 computer vision combined with state-of-the-art LLM orchestration (RAG, Function Calling, n8n multi-agent swarms).\n\n3. **Strong Academic & Research Track Record**:\n   Maintains a stellar **8.72 / 10.0 CGPA** in B.Tech AI & Data Science and has a **published peer-reviewed research paper** on IoT Edge ML anomaly detection.\n\n4. **Industry & Leadership Experience**:\n   Hands-on experience as a Machine Learning Intern at Yellowmatics and Tech Lead for freelance production deployments.\n\nSalman is ready for **immediate full-time onboarding**. Would you like to review his resume or send him an interview invite?`;
+    reply = `Here is why **Salman Khan** stands out as a high-impact engineering hire: 🌟\n\n1. **Proven Production Velocity (15+ Shipped AI Apps)**:\n   Unlike theorists, Salman ships end-to-end products—from ATS resume analyzers to multi-agent accreditation engines deployed on Vercel and cloud microservices.\n\n2. **Deep Learning + Modern Agentic AI Mastery**:\n   Solid foundation in PyTorch, TensorFlow, OpenCV, and YOLOv8 computer vision combined with state-of-the-art LLM orchestration (RAG, Function Calling, n8n multi-agent swarms).\n\n3. **Strong Academic & Research Track Record**:\n   Graduated with a stellar **8.72 / 10.0 CGPA** in B.Tech AI & Data Science and has a **published peer-reviewed research paper** on IoT Edge ML anomaly detection.\n\n4. **Industry & Leadership Experience**:\n   Hands-on experience as a Machine Learning Intern at Yellowmatics and Tech Lead for freelance production deployments.\n\nSalman has completed his degree and is ready for **immediate full-time onboarding**. Would you like to review his resume or send him an interview invite?`;
     return { reply, action_card, model: 'Salman AI Brain' };
   }
 
@@ -394,13 +393,13 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
     lower.includes('education') || lower.includes('college') || lower.includes('cgpa') ||
     lower.includes('degree') || lower.includes('b.tech') || lower.includes('marks') || lower.includes('university')
   ) {
-    reply = `### 🎓 Salman's Academic Credentials\n\n• **Degree:** B.Tech in Artificial Intelligence & Data Science (Final Year, Graduating 2026)\n• **Institution:** Mahendra Engineering College, Tamil Nadu, India\n• **CGPA:** **8.72 / 10.0** (Top Academic Tier)\n• **Key Coursework:** Deep Learning, Machine Learning, Computer Vision, Natural Language Processing, Data Structures & Algorithms, Database Systems, Cloud Computing.\n• **Extracurriculars:** Event Core Member of AInnovat Innovators Club & Anti-Ragging Campaign Leader.\n\nHis strong academic foundation is paired with extensive practical product building!`;
+    reply = `### 🎓 Salman's Academic Credentials\n\n• **Degree:** B.Tech in Artificial Intelligence & Data Science (Completed / Graduated 3 months ago)\n• **Institution:** Mahendra Engineering College, Tamil Nadu, India\n• **CGPA:** **8.72 / 10.0** (Top Academic Tier)\n• **Key Coursework:** Deep Learning, Machine Learning, Computer Vision, Natural Language Processing, Data Structures & Algorithms, Database Systems, Cloud Computing.\n• **Extracurriculars:** Event Core Member of AInnovat Innovators Club & Anti-Ragging Campaign Leader.\n\nSalman has successfully graduated and is available for immediate full-time onboarding!`;
     return { reply, action_card, model: 'Salman AI Brain' };
   }
 
   // 10. Resume / CV Request
   if (lower.includes('resume') || lower.includes('cv') || lower.includes('download')) {
-    reply = `### 📄 Salman Khan's Official Resume\n\nYou can view and download his verified PDF resume here:\n\n🔗 **[View & Download Salman Khan's PDF Resume](https://drive.google.com/file/d/1wTKMmKdFuPWwoiJqUITRqckhVwdTBYDn/view)**\n\n**Highlights Included:**\n• 8.72 CGPA in B.Tech AI & Data Science\n• Machine Learning Internship at Yellowmatics\n• 15+ Production AI Applications & 30+ n8n Workflows\n• Published IoT Edge ML Research Paper\n\nWould you like to send him an email or invite him for an interview?`;
+    reply = `### 📄 Salman Khan's Official Resume\n\nYou can view and download his verified PDF resume here:\n\n🔗 **[View & Download Salman Khan's PDF Resume](https://drive.google.com/file/d/1wTKMmKdFuPWwoiJqUITRqckhVwdTBYDn/view)**\n\n**Highlights Included:**\n• Graduated with 8.72 CGPA in B.Tech AI & Data Science\n• Machine Learning Internship at Yellowmatics\n• 15+ Production AI Applications & 30+ n8n Workflows\n• Published IoT Edge ML Research Paper\n\nWould you like to send him an email or invite him for an interview?`;
     return { reply, action_card, model: 'Salman AI Brain' };
   }
 
@@ -421,17 +420,16 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
   }
 
   // 12. Context-Aware Fallback
-  reply = `I understand you're asking about: *"${text}"*.\n\nAs Salman Khan's AI Representative, here is what I can share:\n• **Engineering Profile:** Salman is a final-year B.Tech AI & Data Science engineer (CGPA: 8.72) with 15+ production AI applications and 30+ autonomous n8n workflows.\n• **Technical Strengths:** Deep Learning (PyTorch, YOLO, OpenCV), LLM Orchestration, and Full-Stack React/FastAPI architectures.\n• **Direct Contact:** If you have a specific inquiry, opportunity, or custom project in mind, I can help you transmit a message directly to Salman's inbox (\`${primaryEmail}\`).\n\nWould you like to explore his **featured projects**, review his **skills**, or **send him an email**?`;
+  reply = `I understand you're asking about: *"${text}"*.\n\nAs Salman Khan's AI Representative, here is what I can share:\n• **Engineering Profile:** Salman is a recently graduated B.Tech AI & Data Science engineer (CGPA: 8.72) with 15+ production AI applications and 30+ autonomous n8n workflows.\n• **Technical Strengths:** Deep Learning (PyTorch, YOLO, OpenCV), LLM Orchestration, and Full-Stack React/FastAPI architectures.\n• **Direct Contact:** If you have a specific inquiry, opportunity, or custom project in mind, I can help you transmit a message directly to Salman's inbox (\`${primaryEmail}\`).\n\nWould you like to explore his **featured projects**, review his **skills**, or **send him an email**?`;
 
   return { reply, action_card, model: 'Salman AI Brain' };
 }
 
 /**
  * Main Unified Chat Router:
- * 1. Queries your Local Offline GPU LLM (Ollama - Qwen 2.5) -> ZERO API KEYS NEEDED!
- * 2. Queries Backend Server if online
- * 3. Queries Gemini Cloud LLM (if key provided)
- * 4. Ultra-Smart Built-in Semantic Brain
+ * 1. Localhost: Local Offline GPU LLM (Ollama - Qwen 2.5) -> ZERO API KEYS!
+ * 2. Vercel / Cloud: Serverless Function (/api/chat) & Gemini
+ * 3. Grounded Semantic Conversational Brain
  */
 export async function getAIChatResponse(userMessage, history = [], userContact = {}) {
   const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : (typeof process !== 'undefined' && process.env ? process.env : {});
@@ -473,22 +471,7 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
     };
   }
 
-  // 1. Direct Local Offline GPU LLM (Priority #1 - Zero API Keys Needed!)
-  try {
-    const localRes = await queryLocalOllama(userMessage, history);
-    if (localRes && localRes.text) {
-      return {
-        reply: localRes.text,
-        tool_call: null,
-        action_card: emailActionCard,
-        model: localRes.model
-      };
-    }
-  } catch (e) {
-    // Local Ollama offline
-  }
-
-  // 2. Try FastAPI Backend
+  // 1. Try Render FastAPI Backend FIRST (primary AI source — works on all environments)
   try {
     const backendRes = await queryBackendAPI(userMessage, history, backendUrl);
     if (backendRes && backendRes.text) {
@@ -500,10 +483,10 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
       };
     }
   } catch (e) {
-    // Backend offline
+    // Backend offline or cold-starting — continue to next tier
   }
 
-  // 3. Try Gemini API if key is present
+  // 2. Try Direct Gemini API (if key is set in .env / Vercel env vars)
   if (geminiKey && geminiKey.trim() !== '' && geminiKey !== 'YOUR_GEMINI_API_KEY') {
     try {
       const geminiRes = await queryGeminiAPI(userMessage, history, geminiKey);
@@ -520,6 +503,23 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
     }
   }
 
-  // 4. Grounded Semantic Brain (Zero API keys needed!)
+  // 3. Localhost only: try local Ollama GPU LLM
+  if (isLocalhostEnv()) {
+    try {
+      const localRes = await queryLocalOllama(userMessage, history);
+      if (localRes && localRes.text) {
+        return {
+          reply: localRes.text,
+          tool_call: null,
+          action_card: emailActionCard,
+          model: localRes.model
+        };
+      }
+    } catch (e) {
+      // Local Ollama not running
+    }
+  }
+
+  // 4. Grounded Semantic Neural Brain (100% Reliable Offline/Online fallback)
   return generateSemanticResponse(userMessage, history, contactState);
 }
