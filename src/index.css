@@ -1876,7 +1876,7 @@ body::before {
   overflow: visible;
 }
 
-/* 1. Base Photo: Red Shirt with Glasses inside Frame */
+/* 1. Actual Photo: Red Shirt with Glasses inside Frame (Visible in Resting State) */
 .person-base-profile-img {
   width: 100%;
   height: 100%;
@@ -1886,64 +1886,63 @@ body::before {
   display: block;
   filter: contrast(1.05);
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 1;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+  z-index: 2;
 }
 
+/* On Popout: Base photo fades out completely so NO background remains */
 .person-portrait-card.is-popped .person-base-profile-img {
-  filter: brightness(0.45) contrast(1.1) blur(0.8px);
-  transform: scale(0.97);
+  opacity: 0;
+  transform: scale(0.94);
+  pointer-events: none;
 }
 
 /* Ambient Halo Behind Popped Cutout */
 .person-cutout-halo {
   position: absolute;
-  top: 15%;
+  top: 20%;
   left: 50%;
-  width: 190px;
-  height: 190px;
+  width: 200px;
+  height: 200px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(255, 225, 120, 0.45) 0%, rgba(212, 175, 55, 0.15) 50%, transparent 75%);
-  filter: blur(25px);
+  background: radial-gradient(circle, rgba(255, 225, 120, 0.5) 0%, rgba(212, 175, 55, 0.18) 50%, transparent 75%);
+  filter: blur(28px);
   pointer-events: none;
   opacity: 0;
   z-index: 3;
   transition: opacity 0.4s ease;
 }
 
-.person-portrait-card.is-popped .person-cutout-halo,
-.person-portrait-card:hover .person-cutout-halo {
+.person-portrait-card.is-popped .person-cutout-halo {
   opacity: 1;
 }
 
-/* 2. Transparent Background Cutout of Salman (Full Uncut Head & Hair) */
+/* 2. Transparent Background Cutout of Salman (Rises & Pops Out Alone Without Background) */
 .person-cutout-img {
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%) translateY(0) scale(1);
+  transform: translateX(-50%) translateY(0) scale(0.98);
   width: auto;
   max-width: 100%;
   height: 220px;
   object-fit: contain;
   object-position: bottom center;
   z-index: 5;
+  opacity: 0;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
   transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.38s ease,
               filter 0.48s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 
-/* Desktop Hover Preview: 3D peek rise */
-.person-portrait-card:hover:not(.is-popped) .person-cutout-img {
-  transform: translateX(-50%) translateY(-18px) scale(1.08);
-  filter: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 18px rgba(212, 175, 55, 0.45));
-}
-
-/* Popped-Out State: Heroic Rise Beyond the Top Frame (Full Hair Visible Without Background) */
+/* Popped-Out State: Only Salman Rises Out Beyond the Top Frame in 3D (Without Background) */
 .person-portrait-card.is-popped .person-cutout-img {
+  opacity: 1;
   transform: translateX(-50%) translateY(-56px) scale(1.22);
-  filter: drop-shadow(0 28px 44px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 28px rgba(212, 175, 55, 0.7));
+  filter: drop-shadow(0 28px 46px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 28px rgba(212, 175, 55, 0.7));
 }
 
 
