@@ -68,11 +68,21 @@ export default function AboutPerson() {
 
               {/* 3D Image Stage */}
               <div className="person-img-stage">
-                {/* Salman Profile Photo (Red Shirt with Glasses) with 3D Elevation */}
+                {/* 1. Base Photo: Red Shirt Profile with Frame */}
                 <img 
                   src="/assets/images/salman_profile.png" 
                   alt="Salman Khan D"
-                  className="person-profile-img"
+                  className="person-base-profile-img"
+                />
+
+                {/* Ambient Golden Halo Behind Popped Cutout */}
+                <div className="person-cutout-halo" />
+
+                {/* 2. Transparent Background Cutout of Salman (Rises & Pops Out Without Background) */}
+                <img 
+                  src="/assets/images/salman_profile_cutout.png" 
+                  alt="Salman Khan D"
+                  className="person-cutout-img"
                 />
               </div>
               
