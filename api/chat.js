@@ -53,7 +53,53 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
+  const groqApiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
   const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+
+  if (groqApiKey) {
+    const formattedMessages = [{ role: 'system', content: SYSTEM_KNOWLEDGE }];
+    if (Array.isArray(history)) {
+      for (const h of history.slice(-6)) {
+        formattedMessages.push({
+          role: h.role === 'assistant' ? 'assistant' : 'user',
+          content: h.content || ''
+        });
+      }
+    }
+    formattedMessages.push({ role: 'user', content: message });
+
+    const groqModels = ['qwen/qwen3.8-27b', 'groq/compound', 'openai/gpt-oss-120b'];
+    for (const model of groqModels) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${groqApiKey.trim()}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: formattedMessages,
+            temperature: 0.7,
+            max_tokens: 500
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const replyText = data.choices?.[0]?.message?.content;
+          if (replyText) {
+            return res.status(200).json({
+              reply: replyText.trim(),
+              model: `Groq Cloud (${model})`
+            });
+          }
+        }
+      } catch (err) {
+        // Try next
+      }
+    }
+  }
 
   if (apiKey) {
     const formattedContents = [];

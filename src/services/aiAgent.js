@@ -117,7 +117,64 @@ async function queryLocalOllama(userMessage, history, customUrl = null) {
   return null;
 }
 
-// 2. Render FastAPI Backend Client (primary cloud AI source)
+// 2. Groq Cloud Ultra-Fast LLM API Client (Qwen 3.8 / Llama 3)
+async function queryGroqAPI(userMessage, history, apiKey) {
+  const formattedMessages = [{ role: 'system', content: GROUNDED_CONTEXT }];
+  
+  if (history && history.length > 0) {
+    for (const h of history.slice(-6)) {
+      formattedMessages.push({
+        role: h.role === 'assistant' ? 'assistant' : 'user',
+        content: h.content || ''
+      });
+    }
+  }
+  formattedMessages.push({ role: 'user', content: userMessage });
+
+  const models = ['qwen/qwen3.8-27b', 'groq/compound', 'openai/gpt-oss-120b'];
+  
+  for (const model of models) {
+    try {
+      const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+      const payload = {
+        model: model,
+        messages: formattedMessages,
+        temperature: 0.65,
+        max_tokens: 450
+      };
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify(payload)
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content?.trim();
+        if (content && content.length > 5) {
+          return {
+            text: content,
+            model: `Groq Cloud (${model})`
+          };
+        }
+      }
+    } catch (e) {
+      // Try next model
+    }
+  }
+  return null;
+}
+
+// 3. Render FastAPI Backend Client (primary cloud AI source)
 async function queryBackendAPI(userMessage, history, backendUrl) {
   // On localhost, also try the Vite proxy path as fallback
   const endpoints = isLocalhostEnv()
@@ -442,6 +499,7 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
  */
 export async function getAIChatResponse(userMessage, history = [], userContact = {}) {
   const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : (typeof process !== 'undefined' && process.env ? process.env : {});
+  const groqKey = env.VITE_GROQ_API_KEY || env.GROQ_API_KEY;
   const geminiKey = env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY;
   const backendUrl = env.VITE_AI_BACKEND_URL || 'http://127.0.0.1:8000';
   const qwenTunnelUrl = env.VITE_QWEN_TUNNEL_URL || env.VITE_QWEN_URL;
@@ -479,6 +537,23 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
       sender_name: contactState.name,
       sender_email: contactState.email
     };
+  }
+
+  // 1. Try Groq Cloud Ultra-Fast LLM API FIRST (24/7 Real-Time Cloud AI)
+  if (groqKey && groqKey.trim() !== '') {
+    try {
+      const groqRes = await queryGroqAPI(userMessage, history, groqKey);
+      if (groqRes && groqRes.text) {
+        return {
+          reply: groqRes.text,
+          tool_call: null,
+          action_card: emailActionCard,
+          model: groqRes.model
+        };
+      }
+    } catch (e) {
+      // Groq offline — fall through
+    }
   }
 
   // 1. Try FastAPI Backend (http://127.0.0.1:8000/api/chat or Render) FIRST

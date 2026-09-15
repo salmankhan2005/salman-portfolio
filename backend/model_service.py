@@ -66,6 +66,43 @@ class LocalNeuralService:
         self.is_loaded = True
         logger.info("Conversational Neural AI Service initialized.")
 
+    def query_groq_api(self, user_message: str, history: Optional[List[Dict[str, str]]] = None) -> Optional[str]:
+        api_key = os.environ.get("GROQ_API_KEY") or os.environ.get("VITE_GROQ_API_KEY")
+        if not api_key:
+            return None
+
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        if history:
+            for h in history[-4:]:
+                messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
+        messages.append({"role": "user", "content": user_message})
+
+        for model in ["qwen/qwen3.8-27b", "groq/compound", "openai/gpt-oss-120b"]:
+            try:
+                payload = {
+                    "model": model,
+                    "messages": messages,
+                    "temperature": 0.7,
+                    "max_tokens": 500
+                }
+                req = urllib.request.Request(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {api_key.strip()}",
+                        "User-Agent": "Mozilla/5.0"
+                    }
+                )
+                with urllib.request.urlopen(req, timeout=10) as response:
+                    res = json.loads(response.read().decode("utf-8"))
+                    text = res.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    if text:
+                        return text.strip()
+            except Exception as e:
+                logger.warning(f"Groq API attempt error ({model}): {e}")
+        return None
+
     def query_gemini_api(self, user_message: str, history: Optional[List[Dict[str, str]]] = None) -> Optional[str]:
         api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("VITE_GEMINI_API_KEY")
         if not api_key:
@@ -163,10 +200,14 @@ class LocalNeuralService:
                 "sender_email": sender_email
             }
 
-        # 1. Try Local Downloaded Qwen 2.5 GPU LLM FIRST (Ollama)
-        llm_reply = self.query_ollama_llm(user_message, history=history)
+        # 1. Try Groq Cloud Ultra-Fast LLM API FIRST (qwen/qwen3.8-27b)
+        llm_reply = self.query_groq_api(user_message, history=history)
 
-        # 2. Try Gemini Cloud LLM as secondary fallback
+        # 2. Try Local Ollama GPU LLM
+        if not llm_reply:
+            llm_reply = self.query_ollama_llm(user_message, history=history)
+
+        # 3. Try Gemini Cloud LLM
         if not llm_reply:
             llm_reply = self.query_gemini_api(user_message, history=history)
 
