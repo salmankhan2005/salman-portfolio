@@ -573,6 +573,46 @@ export function generateSemanticResponse(userMessage, history = [], userContact 
  * 2. Vercel / Cloud: Serverless Function (/api/chat) & Gemini
  * 3. Grounded Semantic Conversational Brain
  */
+// Query Vercel Serverless Function (/api/chat - reads GROQ_API_KEY securely on Vercel server)
+async function queryVercelAPI(userMessage, history) {
+  if (isLocalhostEnv()) return null;
+  try {
+    const historyPayload = (history || []).slice(-6).map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        message: userMessage,
+        history: historyPayload
+      })
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.reply) {
+        return {
+          text: data.reply,
+          tool_call: data.tool_call || null,
+          action_card: data.action_card || null,
+          model: data.model || 'Vercel Serverless AI'
+        };
+      }
+    }
+  } catch (err) {
+    // Vercel serverless unavailable
+  }
+  return null;
+}
+
 export async function getAIChatResponse(userMessage, history = [], userContact = {}) {
   // 🛡️ Security Guardrails Check
   const guardrailCheck = applyInputGuardrails(userMessage);
@@ -626,7 +666,24 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
     };
   }
 
-  // 1. Try Groq Cloud Ultra-Fast LLM API FIRST (24/7 Real-Time Cloud AI)
+  // 1. If on deployed Vercel site, Query Vercel Serverless Function (/api/chat) FIRST
+  if (!isLocalhostEnv()) {
+    try {
+      const vercelRes = await queryVercelAPI(userMessage, history);
+      if (vercelRes && vercelRes.text) {
+        return {
+          reply: vercelRes.text,
+          tool_call: vercelRes.tool_call,
+          action_card: vercelRes.action_card || emailActionCard,
+          model: vercelRes.model
+        };
+      }
+    } catch (e) {
+      // Vercel serverless unavailable
+    }
+  }
+
+  // 2. Try Groq Cloud Ultra-Fast LLM API
   if (groqKey && groqKey.trim() !== '') {
     try {
       const groqRes = await queryGroqAPI(userMessage, history, groqKey);
