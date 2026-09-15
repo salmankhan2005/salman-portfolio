@@ -9,7 +9,7 @@ const defaultCommands = [
   { title: 'Jump to The Person (Engineering Ethos)', section: '#about', shortcut: '04' },
   { title: 'Jump to Credentials & Research', section: '#credentials', shortcut: '05' },
   { title: 'Jump to Contact Dispatch', section: '#contact', shortcut: '06' },
-  { title: 'Launch AI Assistant (FunctionGemma 270M)', action: 'openChatbot', shortcut: 'AI' },
+  { title: 'Launch AI Assistant', action: 'openChatbot', shortcut: 'AI' },
   { title: 'Toggle Theme (Warm Ivory / Royal Dark)', action: 'toggleTheme', shortcut: 'TH' },
   { title: 'Download Official Resume PDF', action: 'downloadCv', shortcut: 'CV' },
   { title: 'Copy Direct Email (samitha0786@gmail.com)', action: 'copyEmail', shortcut: 'CP' },

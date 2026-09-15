@@ -537,9 +537,7 @@ export default function ChatBot({ onShowToast }) {
                 <span className="header-title">SALMAN AI ORCHESTRATOR</span>
               </div>
               <div className="header-subtitle-row">
-                <span className={`status-dot ${backendOnline ? 'online' : 'ready'}`} />
-                <span className="header-model-name">{modelName}</span>
-                <span className="header-mode-tag">Neural AI</span>
+                <span className="header-mode-tag">AI Assistant</span>
               </div>
             </div>
 
