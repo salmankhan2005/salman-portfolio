@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowUpRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function AboutPerson() {
   const [isPopped, setIsPopped] = useState(false);
@@ -43,7 +43,7 @@ export default function AboutPerson() {
             </div>
           </div>
 
-          {/* Right Column: Stacked Keywords & In-Place 3D Pop-Out Portrait Card */}
+          {/* Right Column: Stacked Keywords & Interactive Red Shirt Portrait Card */}
           <div className="person-right-stack">
             <div className="person-vertical-keywords">
               AI<br />
@@ -54,27 +54,31 @@ export default function AboutPerson() {
               IMPACT
             </div>
 
-            {/* In-Place 3D Pop-Out Card: Cutout Rises Smoothly Beyond the Box Frame */}
+            {/* Base Red Shirt Photo with 3D Cutout Rise on Tap/Hover */}
             <div 
               className={`person-portrait-card ${isPopped ? 'is-popped' : ''}`}
               onClick={togglePop}
               role="button"
               tabIndex={0}
-              title={isPopped ? "Click to retract portrait" : "Click to pop out portrait"}
+              title={isPopped ? "Click to retract" : "Click to pop out"}
               onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && togglePop()}
             >
-              {/* Card Ambient Lighting */}
+              {/* Card Ambient Glow */}
               <div className="person-card-glow" />
 
-              {/* 3D Cutout Image Stage */}
+              {/* 3D Image Stage */}
               <div className="person-img-stage">
-                {/* Background Base Box (Stays in frame) */}
-                <div className="person-img-backdrop" />
+                {/* 1. Base Photo: Red Shirt with Glasses */}
+                <img 
+                  src="/assets/images/salman_profile.png" 
+                  alt="Salman Khan D"
+                  className="person-base-profile-img"
+                />
 
-                {/* Ambient Halo Behind Cutout Head */}
+                {/* Ambient Halo Behind Popped Cutout */}
                 <div className="person-cutout-halo" />
 
-                {/* Transparent Cutout Portrait (Pops out / Rises beyond the top edge) */}
+                {/* 2. 3D Cutout Rise on Tap / Hover */}
                 <img 
                   src="/assets/images/salman_hero_ai_cutout.png" 
                   alt="Salman Khan D"
