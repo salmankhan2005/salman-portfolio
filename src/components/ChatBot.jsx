@@ -4,13 +4,14 @@ import {
   ExternalLink, Mail, CheckCircle, AlertCircle, Bot, User, ArrowRight
 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import { getAIChatResponse, extractContactEntities } from '../services/aiAgent';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = import.meta.env.VITE_AI_BACKEND_URL || 'http://127.0.0.1:8000';
 
 const INITIAL_MESSAGE = {
   id: 'init-1',
   role: 'assistant',
-  content: `👋 Hello! I'm Salman Khan's AI Assistant, powered by an open-source neural model.\n\nI can walk you through his **production AI applications**, discuss his **deep learning and agentic systems**, or help you connect with him directly for engineering roles and collaborations.\n\nWhat would you like to explore today?`,
+  content: `👋 Hello! I'm Salman Khan's personal AI Representative.\n\nI can walk you through his **15+ production AI applications**, explain his **deep learning and multi-agent systems**, or help you connect with him directly for engineering roles and collaborations.\n\nWhat would you like to explore today?`,
   tool_call: null,
   action_card: null,
   timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -30,7 +31,7 @@ export default function ChatBot({ onShowToast }) {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [backendOnline, setBackendOnline] = useState(false);
-  const [modelName, setModelName] = useState('FunctionGemma 270M');
+  const [modelName, setModelName] = useState('Salman AI Brain');
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -41,16 +42,20 @@ export default function ChatBot({ onShowToast }) {
   const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
   const PRIMARY_EMAIL = import.meta.env.VITE_CONTACT_RECEIVER_EMAIL || 'samitha0786@gmail.com';
 
-  // Check Backend Health
+  // Check Backend Health & Environment Model
   useEffect(() => {
+    if (import.meta.env.VITE_GEMINI_API_KEY && import.meta.env.VITE_GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY') {
+      setModelName('Google Gemini 2.0');
+    }
+
     async function checkHealth() {
       try {
         const res = await fetch(`${BACKEND_URL}/api/health`, { method: 'GET' });
         if (res.ok) {
           const data = await res.json();
           setBackendOnline(true);
-          if (data.model_loaded) {
-            setModelName(`FunctionGemma 270M (${data.device?.toUpperCase() || 'CUDA'})`);
+          if (!import.meta.env.VITE_GEMINI_API_KEY) {
+            setModelName(`Neural Agent (${data.device?.toUpperCase() || 'LIVE'})`);
           }
         } else {
           setBackendOnline(false);
@@ -60,7 +65,7 @@ export default function ChatBot({ onShowToast }) {
       }
     }
     checkHealth();
-    const interval = setInterval(checkHealth, 15000);
+    const interval = setInterval(checkHealth, 20000);
     return () => clearInterval(interval);
   }, []);
 
@@ -98,7 +103,7 @@ export default function ChatBot({ onShowToast }) {
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
 
-    // Check if user is confirming a pending email draft by typing "send", "send it", "confirm", "send mail", etc.
+    // Check if user is confirming a pending email draft
     const lower = textToSend.toLowerCase();
     const confirmKeywords = [
       'send', 'send it', 'send email', 'send mail', 'confirm', 'yes send', 'yes please',
@@ -110,25 +115,22 @@ export default function ChatBot({ onShowToast }) {
 
     if (pendingMsg) {
       // Check if user provided email or name in this message
-      const emailMatch = textToSend.match(/[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}/);
-      const nameMatch = textToSend.match(/(?:from|name is|i am|i'm)\s+([A-Za-z]+(?:\s+[A-Za-z]+)?)/i);
+      const { name: extractedName, email: extractedEmail } = extractContactEntities(textToSend);
 
-      let updatedName = pendingMsg.action_card.sender_name || userContact.name || '';
-      let updatedEmail = pendingMsg.action_card.sender_email || userContact.email || '';
+      let updatedName = extractedName || pendingMsg.action_card.sender_name || userContact.name || '';
+      let updatedEmail = extractedEmail || pendingMsg.action_card.sender_email || userContact.email || '';
 
-      if (emailMatch) {
-        updatedEmail = emailMatch[0];
+      if (extractedEmail) {
         setUserContact(prev => ({ ...prev, email: updatedEmail }));
         localStorage.setItem('sk_visitor_email', updatedEmail);
       }
-      if (nameMatch) {
-        updatedName = nameMatch[1];
+      if (extractedName) {
         setUserContact(prev => ({ ...prev, name: updatedName }));
         localStorage.setItem('sk_visitor_name', updatedName);
       }
 
       // Update the pending action card with any newly discovered details
-      if (emailMatch || nameMatch) {
+      if (extractedEmail || extractedName) {
         setMessages(prev => prev.map(m => {
           if (m.id === pendingMsg.id) {
             return {
@@ -160,7 +162,7 @@ export default function ChatBot({ onShowToast }) {
           const botGuidance = {
             id: `bot-guide-${Date.now()}`,
             role: 'assistant',
-            content: `I have your email draft ready for Salman Khan! 📬\n\nPlease fill in your **Name** and **Email address** in the card above (or reply here: *"My name is [Your Name], my email is [Your Email]"*) so Salman knows who to reply to, then click **Confirm & Send Email**.`,
+            content: `I have your email draft ready for Salman Khan! 📬\n\nPlease enter your **Name** and **Email address** in the card above (or reply here: *"My name is [Your Name], my email is [Your Email]"*) so Salman knows who to reply to, then click **Confirm & Send Email**.`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
           setMessages(prev => [...prev, botGuidance]);
@@ -172,24 +174,11 @@ export default function ChatBot({ onShowToast }) {
     setIsLoading(true);
 
     try {
-      // 1. Try Backend API
-      const historyPayload = messages.slice(-6).map(m => ({
-        role: m.role,
-        content: m.content
-      }));
-
-      const res = await fetch(`${BACKEND_URL}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: textToSend,
-          history: historyPayload
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        let card = data.action_card;
+      // Generate intelligent conversational AI response
+      const aiResult = await getAIChatResponse(textToSend, messages, userContact);
+      
+      if (aiResult) {
+        let card = aiResult.action_card;
         if (card) {
           // Pre-fill with saved contact or extracted contact
           if (!card.sender_name && userContact.name) card.sender_name = userContact.name;
@@ -204,14 +193,18 @@ export default function ChatBot({ onShowToast }) {
           }
         }
 
-        streamBotMessage(data.reply, data.tool_call, card);
+        if (aiResult.model) {
+          setModelName(aiResult.model);
+        }
+
+        streamBotMessage(aiResult.reply, aiResult.tool_call || null, card);
         return;
       }
-      throw new Error("Backend response error");
     } catch (err) {
-      console.warn("Backend chat unavailable, using built-in client fallback:", err);
-      // Fallback Client Orchestrator
-      handleClientFallback(textToSend);
+      console.warn("AI Chat processing error:", err);
+      streamBotMessage(
+        `I'm here to assist you! Feel free to ask about Salman's **15+ AI projects**, his **deep learning & computer vision stack**, or say *"Send Salman an email"* to reach out directly!`
+      );
     }
   }
 
@@ -265,47 +258,7 @@ export default function ChatBot({ onShowToast }) {
           return m;
         }));
       }
-    }, 30);
-  }
-
-  // Client Fallback if backend is warming up
-  function handleClientFallback(text) {
-    const t = text.toLowerCase();
-    let reply = "";
-    let action_card = null;
-
-    // Extract email or name if present in text
-    const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
-    const nameMatch = text.match(/(?:from|name is|i am|i'm)\s+([A-Za-z]+(?:\s+[A-Za-z]+)?)/i);
-    const extractedEmail = emailMatch ? emailMatch[0] : userContact.email;
-    const extractedName = nameMatch ? nameMatch[1] : userContact.name;
-
-    if (t.includes('email') || t.includes('hire') || t.includes('contact') || t.includes('message') || t.includes('reach out')) {
-      action_card = {
-        action_required: "USER_CONFIRMATION",
-        action_type: "email_confirmation",
-        recipient: PRIMARY_EMAIL,
-        subject: "Inquiry regarding AI Engineering / Opportunities for Salman",
-        message: `Hi Salman,\n\nI reviewed your portfolio and would like to discuss an opportunity regarding: "${text}".`,
-        sender_name: extractedName || "",
-        sender_email: extractedEmail || ""
-      };
-      reply = `I would be thrilled to help you connect with Salman! 📬\n\nSalman is actively open to **full-time AI Engineer**, **ML**, and **Full-Stack** roles.\n\nI've prepared a direct message preview below. Fill in your details and click **🚀 Confirm & Send Email** to send your note straight to his inbox (\`${PRIMARY_EMAIL}\`).`;
-    } else if (t.includes('project') || t.includes('built') || t.includes('app') || t.includes('spark') || t.includes('coach')) {
-      reply = `Salman has engineered over **15 production AI applications** and **30+ autonomous agent workflows**! Here are the core highlights you can explore:\n\n• **[AI Resume Builder (Spark)](https://remix-of-ai-resume-spark-main.vercel.app)**: Real-time ATS resume scoring with dynamic AI suggestions.\n• **[AI Career Coach](https://ai-career-coach-full-stack.vercel.app)**: Skill gap analysis platform with personalized learning roadmaps.\n• **[AI Course Generator](https://project-six-delta-36.vercel.app)**: Generates structured modular syllabi and interactive lesson content.\n• **30+ Autonomous n8n Agents**: Institutional accreditation pipelines (NAAC & NIRF) and lead qualification.\n\nWhich of these would you like to explore further?`;
-    } else if (t.includes('skill') || t.includes('stack') || t.includes('tech') || t.includes('pytorch')) {
-      reply = `Salman's engineering stack spans deep learning, modern LLMs, and high-performance full-stack web architectures:\n\n• **Deep Learning & CV:** PyTorch, TensorFlow, OpenCV, YOLO object detection.\n• **LLMs & Multi-Agent:** FunctionGemma, GPT-4o, Claude 3.5, RAG architectures, n8n orchestration.\n• **Full-Stack:** React.js, Vite, Node.js, Python FastAPI, RESTful microservices.\n• **Edge & IoT:** Raspberry Pi 4, edge AI anomaly detection.\n\nHe specializes in turning complex deep learning models into production-grade software.`;
-    } else if (t.includes('resume') || t.includes('cv')) {
-      reply = `Salman's official verified resume is available for review:\n\n🔗 **[View & Download Salman's Official PDF Resume](https://drive.google.com/file/d/1wTKMmKdFuPWwoiJqUITRqckhVwdTBYDn/view)**\n\nIt highlights his 8.72 CGPA in B.Tech AI & Data Science, ML internship at Yellowmatics, and his 15+ production applications. Let me know if you'd like to reach out to him directly!`;
-    } else if (t.includes('experience') || t.includes('intern')) {
-      reply = `Here is an overview of Salman's industry background:\n\n• **Machine Learning Intern at Yellowmatics:** Trained and optimized predictive ML models and CV pipelines using PyTorch and Flask for real-time inference.\n• **Freelance Tech Lead at Strikkerz Team:** Led full-stack client applications, React architectures, and workflow automations.\n• **Published AI Researcher:** Author of an academic publication on ML-based IoT anomaly detection.\n\nWould you like to discuss potential roles or project collaborations?`;
-    } else {
-      reply = `Hello! 👋 I'm Salman Khan's AI representative.\n\nSalman is a final-year B.Tech AI & Data Science engineer (CGPA: 8.72) with 15+ production AI applications and 30+ autonomous n8n workflows. He is actively seeking full-time AI Engineer and developer roles.\n\nFeel free to ask about his projects, deep learning stack, or say *"Send Salman an email"* to get in touch directly!`;
-    }
-
-    setTimeout(() => {
-      streamBotMessage(reply, null, action_card);
-    }, 350);
+    }, 25);
   }
 
   // Handle Email Card Dispatch via EmailJS + Server logging
@@ -388,7 +341,7 @@ export default function ChatBot({ onShowToast }) {
         {
           id: `bot-sent-${Date.now()}`,
           role: 'assistant',
-          content: `✅ **Email Successfully Sent to Salman Khan!**\n\n• **Recipient:** \`${PRIMARY_EMAIL}\`\n• **From:** \`${cardData.sender_name} <${cardData.sender_email}>\`\n• **Subject:** *${cardData.subject}*\n\nYour message was successfully transmitted via SMTP gateway. Salman receives instant notification and will reply to \`${cardData.sender_email}\` within 24 hours.`,
+          content: `✅ **Email Successfully Sent to Salman Khan!**\n\n• **Recipient:** \`${PRIMARY_EMAIL}\`\n• **From:** \`${cardData.sender_name} <${cardData.sender_email}>\`\n• **Subject:** *${cardData.subject}*\n\nYour message was transmitted to Salman's inbox. He receives instant notification and will get back to \`${cardData.sender_email}\` promptly!`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -500,7 +453,7 @@ export default function ChatBot({ onShowToast }) {
       <div className="ai-chatbot-trigger-container" id="ai-chatbot-trigger">
 
         {!isOpen && (
-          <div className="ai-avatar-trigger" onClick={() => setIsOpen(true)} title="Chat with Salman's AI">
+          <div className="ai-avatar-trigger" onClick={() => setIsOpen(true)} title="Chat with Salman's AI Assistant">
             {/* Hi speech bubble */}
             <div className="ai-hi-bubble">
               <span>Hi! 👋</span>
@@ -537,7 +490,7 @@ export default function ChatBot({ onShowToast }) {
                 <span className="header-title">SALMAN AI ORCHESTRATOR</span>
               </div>
               <div className="header-subtitle-row">
-                <span className="header-mode-tag">AI Assistant</span>
+                <span className="header-mode-tag">{modelName}</span>
               </div>
             </div>
 
@@ -732,7 +685,7 @@ export default function ChatBot({ onShowToast }) {
               ref={inputRef}
               type="text"
               className="ai-chat-input"
-              placeholder="Ask about projects or say 'send an email'..."
+              placeholder="Ask about projects, skills, or say 'send an email'..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
