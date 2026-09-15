@@ -93,7 +93,11 @@ async function queryLocalOllama(userMessage, history, customUrl = null) {
 
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true',
+          'Bypass-Tunnel-Reminder': 'true'
+        },
         signal: controller.signal,
         body: payload
       });
