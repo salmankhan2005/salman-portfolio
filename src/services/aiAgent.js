@@ -54,15 +54,15 @@ export function extractContactEntities(text) {
   };
 }
 
-// 1. Local Offline GPU LLM Direct Client (ONLY on localhost dev — uses downloaded Qwen 2.5)
-async function queryLocalOllama(userMessage, history) {
-  if (!isLocalhostEnv()) return null; // Hard guard: never attempt on deployed cloud sites
+// 1. Local Offline GPU LLM Direct Client (uses downloaded Qwen 2.5)
+async function queryLocalOllama(userMessage, history, customUrl = null) {
+  const endpoints = customUrl 
+    ? [`${customUrl}/api/chat`]
+    : isLocalhostEnv()
+      ? ['/ollama-api/api/chat', 'http://127.0.0.1:11434/api/chat', 'http://localhost:11434/api/chat']
+      : [];
 
-  const endpoints = [
-    '/ollama-api/api/chat',               // Vite Proxy (Bypasses CORS in Vite dev server)
-    'http://127.0.0.1:11434/api/chat',    // Direct port
-    'http://localhost:11434/api/chat'
-  ];
+  if (endpoints.length === 0) return null;
 
   const messages = [{ role: 'system', content: GROUNDED_CONTEXT }];
   if (history && history.length > 0) {
@@ -440,6 +440,7 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
   const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : (typeof process !== 'undefined' && process.env ? process.env : {});
   const geminiKey = env.VITE_GEMINI_API_KEY || env.GEMINI_API_KEY;
   const backendUrl = env.VITE_AI_BACKEND_URL || 'http://127.0.0.1:8000';
+  const qwenTunnelUrl = env.VITE_QWEN_TUNNEL_URL || env.VITE_QWEN_URL;
 
   // Extract contact info if present in message
   const { name: extractedName, email: extractedEmail } = extractContactEntities(userMessage);
@@ -476,7 +477,24 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
     };
   }
 
-  // 1. Localhost Environment: Query Local Downloaded Qwen 2.5 GPU LLM FIRST!
+  // 1. If custom Qwen Tunnel/Cloud URL is configured (for deployed live website)
+  if (qwenTunnelUrl) {
+    try {
+      const qwenRes = await queryLocalOllama(userMessage, history, qwenTunnelUrl);
+      if (qwenRes && qwenRes.text) {
+        return {
+          reply: qwenRes.text,
+          tool_call: null,
+          action_card: emailActionCard,
+          model: 'Qwen 2.5 (Cloud GPU)'
+        };
+      }
+    } catch (e) {
+      // Tunnel offline — continue
+    }
+  }
+
+  // 2. Localhost Environment: Query Local Downloaded Qwen 2.5 GPU LLM FIRST!
   if (isLocalhostEnv()) {
     try {
       const localRes = await queryLocalOllama(userMessage, history);

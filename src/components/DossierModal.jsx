@@ -153,7 +153,7 @@ export default function DossierModal({ isOpen, onClose }) {
             <div className="dossier-edu-card">
               <div className="edu-main">
                 <span className="edu-degree">B.Tech in Artificial Intelligence &amp; Data Science</span>
-                <span className="edu-school">Mahendra Engineering College, Tamil Nadu &bull; Final Year</span>
+                <span className="edu-school">Mahendra Engineering College, Tamil Nadu &bull; Graduated (Recent)</span>
               </div>
               <div className="edu-badge">
                 <span className="badge-num">8.72</span>

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "ai:backend": "py -3.10 backend/run.py"
+    "ai:backend": "py -3.10 backend/run.py",
+    "test:ai": "node test_chat.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
