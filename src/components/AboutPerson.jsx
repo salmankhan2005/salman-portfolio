@@ -1,19 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { X, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sparkles, ArrowUpRight } from 'lucide-react';
 
 export default function AboutPerson() {
   const [isPopped, setIsPopped] = useState(false);
 
-  // Close popup with Escape key
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isPopped) {
-        setIsPopped(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPopped]);
+  const togglePop = () => {
+    setIsPopped(prev => !prev);
+  };
 
   return (
     <section className="person-section" id="about">
@@ -50,7 +43,7 @@ export default function AboutPerson() {
             </div>
           </div>
 
-          {/* Right Column: Stacked Keywords & Interactive Portrait Card */}
+          {/* Right Column: Stacked Keywords & In-Place 3D Pop-Out Portrait Card */}
           <div className="person-right-stack">
             <div className="person-vertical-keywords">
               AI<br />
@@ -61,29 +54,44 @@ export default function AboutPerson() {
               IMPACT
             </div>
 
+            {/* In-Place 3D Pop-Out Card: Cutout Rises Smoothly Beyond the Box Frame */}
             <div 
-              className="person-portrait-card"
-              onClick={() => setIsPopped(true)}
+              className={`person-portrait-card ${isPopped ? 'is-popped' : ''}`}
+              onClick={togglePop}
               role="button"
               tabIndex={0}
-              title="Click to reveal full portrait"
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setIsPopped(true)}
+              title={isPopped ? "Click to retract portrait" : "Click to pop out portrait"}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && togglePop()}
             >
-              <img 
-                src="/assets/images/salman_profile.png" 
-                alt="Salman Khan D"
-                className="person-profile-img"
-              />
+              {/* Card Ambient Lighting */}
+              <div className="person-card-glow" />
+
+              {/* 3D Cutout Image Stage */}
+              <div className="person-img-stage">
+                {/* Background Base Box (Stays in frame) */}
+                <div className="person-img-backdrop" />
+
+                {/* Ambient Halo Behind Cutout Head */}
+                <div className="person-cutout-halo" />
+
+                {/* Transparent Cutout Portrait (Pops out / Rises beyond the top edge) */}
+                <img 
+                  src="/assets/images/salman_hero_ai_cutout.png" 
+                  alt="Salman Khan D"
+                  className="person-cutout-img"
+                />
+              </div>
               
-              {/* Interactive Tap Hint Badge */}
+              {/* Interactive Tap Badge */}
               <div className="person-tap-hint">
                 <Sparkles size={11} className="person-tap-sparkle" />
-                <span>TAP TO REVEAL</span>
+                <span>{isPopped ? 'TAP TO RETRACT' : 'TAP TO POP OUT'}</span>
               </div>
 
-              <div className="secondary-cursive-tag font-handwriting">
+              <div className={`secondary-cursive-tag font-handwriting ${isPopped ? 'cursive-popped' : ''}`}>
                 Same Person<br />Bigger Plans.
               </div>
+              
               <div className="person-badge-note">
                 GOOD TECH.<br />
                 KINDER PEOPLE.
@@ -94,68 +102,6 @@ export default function AboutPerson() {
         </div>
 
       </div>
-
-      {/* === CINEMATIC BACKGROUND-FREE PORTRAIT POPUP MODAL === */}
-      {isPopped && (
-        <div 
-          className="portrait-popup-overlay"
-          onClick={() => setIsPopped(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Salman Khan Portrait View"
-        >
-          <div className="portrait-popup-backdrop" />
-          
-          <div className="portrait-popup-stage" onClick={(e) => e.stopPropagation()}>
-            {/* Ambient Radial Gold Halo Glow */}
-            <div className="portrait-popup-halo" />
-
-            {/* Close Button */}
-            <button 
-              className="portrait-popup-close-btn"
-              onClick={() => setIsPopped(false)}
-              aria-label="Close portrait view"
-              type="button"
-            >
-              <X size={18} />
-            </button>
-
-            {/* Background-Free Cutout Image Stage (Up to Chest/Face Level) */}
-            <div 
-              className="portrait-popup-cutout-container"
-              onClick={() => setIsPopped(false)}
-            >
-              <img 
-                src="/assets/images/salman_hero_ai_cutout.png" 
-                alt="Salman Khan D"
-                className="portrait-popup-cutout-img"
-              />
-              <div className="portrait-popup-rim-light" />
-            </div>
-
-            {/* Floating Editorial Card Info */}
-            <div className="portrait-popup-card">
-              <div className="portrait-popup-kicker">
-                <span className="portrait-kicker-dot" />
-                <span>AI ENGINEER // PRODUCT ARCHITECT</span>
-              </div>
-              <h3 className="portrait-popup-name">SALMAN KHAN D</h3>
-              <p className="portrait-popup-quote font-handwriting">
-                "Same Person. Bigger Plans."
-              </p>
-              <div className="portrait-popup-motto">
-                <span>21.8744° N, 73.0960° E</span>
-                <span className="portrait-motto-sep">|</span>
-                <span>GOOD TECH. KINDER PEOPLE.</span>
-              </div>
-              <div className="portrait-popup-close-hint">
-                <span>TAP ANYWHERE TO DISMISS</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
     </section>
   );
 }
