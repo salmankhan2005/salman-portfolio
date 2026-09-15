@@ -477,24 +477,22 @@ export async function getAIChatResponse(userMessage, history = [], userContact =
     };
   }
 
-  // 1. If custom Qwen Tunnel/Cloud URL is configured (for deployed live website)
-  if (qwenTunnelUrl) {
-    try {
-      const qwenRes = await queryLocalOllama(userMessage, history, qwenTunnelUrl);
-      if (qwenRes && qwenRes.text) {
-        return {
-          reply: qwenRes.text,
-          tool_call: null,
-          action_card: emailActionCard,
-          model: 'Qwen 2.5 (Cloud GPU)'
-        };
-      }
-    } catch (e) {
-      // Tunnel offline — continue
+  // 1. Try FastAPI Backend (http://127.0.0.1:8000/api/chat or Render) FIRST
+  try {
+    const backendRes = await queryBackendAPI(userMessage, history, backendUrl);
+    if (backendRes && backendRes.text) {
+      return {
+        reply: backendRes.text,
+        tool_call: backendRes.tool_call,
+        action_card: backendRes.action_card || emailActionCard,
+        model: backendRes.model
+      };
     }
+  } catch (e) {
+    // Backend offline — try direct Ollama
   }
 
-  // 2. Localhost Environment: Query Local Downloaded Qwen 2.5 GPU LLM FIRST!
+  // 2. Localhost Environment: Query Local Downloaded Qwen 2.5 GPU LLM directly
   if (isLocalhostEnv()) {
     try {
       const localRes = await queryLocalOllama(userMessage, history);
