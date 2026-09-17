@@ -12,16 +12,25 @@ import {
   MessageSquareText,
   User,
   Radio,
-  Mic
+  Mic,
+  CheckCircle2
 } from 'lucide-react';
 
 const voicePersonas = [
   {
+    id: 'salman_real',
+    name: 'Salman Khan (Real Voice)',
+    label: "Salman's Authentic Recorded Voice",
+    accent: 'Original Audio (Verified)',
+    featured: true,
+    isReal: true
+  },
+  {
     id: 'salman',
-    name: 'Salman Khan',
-    label: "Salman's AI Neural Voice Clone",
-    accent: 'Authentic Indian-English (Natural)',
-    featured: true
+    name: 'Salman AI Neural Clone',
+    label: 'AI Re-synthesized Indian-English',
+    accent: 'Natural Neural Clone',
+    featured: false
   },
   {
     id: 'realtime_browser',
@@ -91,7 +100,7 @@ const tourChapters = [
 export default function AudioTour({ isActive, onClose, onShowToast }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-  const [selectedVoice, setSelectedVoice] = useState('salman');
+  const [selectedVoice, setSelectedVoice] = useState('salman_real');
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -172,9 +181,20 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       return;
     }
 
-    // Option B: High-Definition Neural TTS (Salman / Christopher / Ava / Andrew)
-    const audioPath = `/assets/audio/tour_chapter_${chapter.id}_${voice}.mp3`;
-    const fallbackPath = `/assets/audio/tour_chapter_${chapter.id}.mp3`;
+    // Option B: Real Recorded Audio or Neural TTS Models
+    let audioPath = '';
+    let fallbackPath = '';
+
+    if (voice === 'salman_real') {
+      audioPath = `/assets/audio/salman-sudio/Chapter-${chapter.id}.mp4`;
+      fallbackPath = `/assets/audio/salman-sudio/Chapter-${chapter.id}.m4a`;
+    } else if (voice === 'salman') {
+      audioPath = `/assets/audio/tour_chapter_${chapter.id}_salman.mp3`;
+      fallbackPath = `/assets/audio/tour_chapter_${chapter.id}.mp3`;
+    } else {
+      audioPath = `/assets/audio/tour_chapter_${chapter.id}_${voice}.mp3`;
+      fallbackPath = `/assets/audio/tour_chapter_${chapter.id}.mp3`;
+    }
 
     const audio = new Audio(audioPath);
     audio.playbackRate = rate;
@@ -191,7 +211,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     };
 
     audio.onerror = () => {
-      console.warn(`Primary audio ${audioPath} error, falling back to ${fallbackPath}`);
+      console.warn(`Primary audio ${audioPath} error, attempting fallback ${fallbackPath}`);
       const fallbackAudio = new Audio(fallbackPath);
       fallbackAudio.playbackRate = rate;
       fallbackAudio.muted = isMuted;
@@ -278,7 +298,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     setShowVoiceMenu(false);
     if (onShowToast) {
       const v = voicePersonas.find(x => x.id === voiceId);
-      onShowToast(`Voice Switched: ${v ? v.name : voiceId}`);
+      onShowToast(`Voice: ${v ? v.name : voiceId}`);
     }
     if (isPlaying) {
       playChapter(currentChapterIndex, playbackRate, voiceId);
@@ -389,7 +409,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
             <button 
               className={`tour-btn-voice ${activeVoiceObj.featured ? 'is-featured' : ''}`}
               onClick={() => setShowVoiceMenu(prev => !prev)}
-              title="Select Voice: Salman's AI Voice Clone / Real-time Web TTS / Studio Voices"
+              title="Select Voice: Salman Khan Real Voice / Neural Clone / Web TTS / Studio Voices"
             >
               <Mic size={11} className="voice-mic-icon" />
               <span>{activeVoiceObj.name}</span>
