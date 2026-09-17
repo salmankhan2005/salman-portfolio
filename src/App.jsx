@@ -17,6 +17,7 @@ import CommandPalette from './components/CommandPalette';
 import ChatBot from './components/ChatBot';
 import RecruiterFastTrack from './components/RecruiterFastTrack';
 import AudioTour from './components/AudioTour';
+import AgentPipelineSandbox from './components/AgentPipelineSandbox';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -104,6 +105,7 @@ export default function App() {
       <main>
         <Hero onOpenDossier={() => setIsDossierOpen(true)} />
         <SystemsMatrix />
+        <AgentPipelineSandbox />
         <WorkArchive onOpenProject={(id) => setActiveProject(id)} />
         <FreelanceShowcase onOpenProject={(id) => setActiveProject(id)} />
         <Chronology />

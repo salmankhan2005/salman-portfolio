@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 const defaultCommands = [
   { title: '⚡ Launch Recruiter Fast-Track (30s Executive Skim)', action: 'openRecruiter', shortcut: 'RF' },
   { title: '🎧 Play 60s AI Voice Executive Audio Tour', action: 'openAudioTour', shortcut: 'AT' },
+  { title: '🤖 Jump to Live AI Agent Pipeline Sandbox', section: '#agent-sandbox', shortcut: 'SB' },
   { title: 'Jump to Hero / Identity', section: '#hero', shortcut: '00' },
   { title: 'Jump to Work Archive (Featured Systems)', section: '#featured-work', shortcut: '01' },
   { title: 'Jump to Freelance & Client Builds (Finova, Logistics, MealPlan)', section: '#freelance', shortcut: 'FL' },
