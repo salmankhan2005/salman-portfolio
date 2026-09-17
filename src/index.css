@@ -6584,19 +6584,26 @@ body::before {
   left: 50%;
   transform: translateX(-50%);
   z-index: 9998;
-  background: rgba(14, 12, 10, 0.96);
-  border: 1px solid rgba(212, 175, 55, 0.7);
-  border-radius: 14px;
-  padding: 0.75rem 1.25rem;
+  background: rgba(14, 12, 10, 0.95);
+  border: 1px solid rgba(212, 175, 55, 0.65);
+  border-radius: 999px;
+  padding: 0.45rem 1.15rem;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(212, 175, 55, 0.25);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 175, 55, 0.25);
   animation: slideUpFloat 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  width: min(840px, calc(100vw - 2rem));
+  width: auto;
+  max-width: calc(100vw - 2rem);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.audio-tour-floating-bar.is-expanded {
+  border-radius: 14px;
+  width: min(800px, calc(100vw - 2rem));
+  padding: 0.75rem 1.15rem;
 }
 
 @keyframes slideUpFloat {
@@ -6608,24 +6615,24 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.85rem;
+  gap: 1rem;
   width: 100%;
 }
 
 .tour-info-left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   flex-shrink: 0;
 }
 
 .tour-badge-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   background: rgba(212, 175, 55, 0.18);
   border: 1px solid rgba(212, 175, 55, 0.45);
-  padding: 0.25rem 0.65rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.6rem;
@@ -6638,7 +6645,7 @@ body::before {
 .tour-text-preview {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: #EDE8DE;
@@ -6650,18 +6657,28 @@ body::before {
   font-weight: 700;
 }
 
-/* 16-Bar Audio Spectrum Visualizer */
+.tour-chapter-dot {
+  color: var(--ink-faint);
+  font-size: 0.7rem;
+}
+
+.tour-chapter-name {
+  font-weight: 600;
+  color: #F2EFEB;
+}
+
+/* 10-Bar Audio Spectrum Visualizer */
 .tour-spectrum-equalizer {
   display: flex;
   align-items: center;
   gap: 2.5px;
-  height: 18px;
+  height: 16px;
   flex-shrink: 0;
 }
 
 .spectrum-bar {
   width: 2.5px;
-  height: 4px;
+  height: 3px;
   background: rgba(212, 175, 55, 0.35);
   border-radius: 2px;
   transition: all 0.2s ease;
@@ -6675,14 +6692,14 @@ body::before {
 @keyframes spectrumBounce {
   0% { height: 3px; }
   50% { height: 16px; }
-  100% { height: 6px; }
+  100% { height: 5px; }
 }
 
 /* Controls */
 .tour-controls-group {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   flex-shrink: 0;
 }
 
@@ -6714,8 +6731,8 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.14);
   color: #EDE8DE;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6729,12 +6746,18 @@ body::before {
 .tour-btn-speed {
   border-radius: 999px;
   width: auto;
-  padding: 0 0.5rem;
+  padding: 0 0.45rem;
 }
 
 .tour-btn-icon:hover, .tour-btn-speed:hover, .tour-btn-close:hover {
   background: rgba(212, 175, 55, 0.25);
   border-color: rgba(212, 175, 55, 0.6);
+  color: #FFF2C6;
+}
+
+.tour-btn-icon.is-active-btn {
+  background: rgba(212, 175, 55, 0.3);
+  border-color: #FFF2C6;
   color: #FFF2C6;
 }
 
@@ -6753,7 +6776,7 @@ body::before {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   font-weight: 700;
-  padding: 0.32rem 0.65rem;
+  padding: 0.32rem 0.6rem;
   border-radius: 999px;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -6831,44 +6854,6 @@ body::before {
 .v-desc {
   font-size: 0.62rem;
   color: var(--ink-muted);
-}
-
-/* Timeline Scrubber Row */
-.tour-timeline-row {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-}
-
-.timeline-time {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--gold-primary);
-  font-weight: 700;
-  min-width: 28px;
-}
-
-.tour-seek-slider {
-  flex: 1;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
-
-.tour-seek-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #FFF2A3;
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
 }
 
 /* Expandable Live Transcript Drawer */

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, 
   Pause, 
-  RotateCcw, 
   X, 
   Volume2, 
   VolumeX, 
@@ -10,8 +9,7 @@ import {
   Headphones,
   FastForward,
   Rewind,
-  ChevronUp,
-  ChevronDown,
+  MessageSquareText,
   User,
   Radio
 } from 'lucide-react';
@@ -49,7 +47,7 @@ const tourChapters = [
   {
     id: 2,
     targetId: 'systems',
-    title: 'Autonomous Multi-Agents & Architecture',
+    title: 'Autonomous Multi-Agents',
     subhead: '30+ n8n Agent Pipelines & GPT-4o Swarms',
     duration: 14,
     text: "I have architected over 30 autonomous multi-agent pipelines on n8n, orchestrating specialized GPT-4o sub-agents for real-time compliance and predictive intelligence."
@@ -57,7 +55,7 @@ const tourChapters = [
   {
     id: 3,
     targetId: 'featured-work',
-    title: 'Production Apps & Enterprise Impact',
+    title: 'Production Apps & Impact',
     subhead: '15+ Deployed Full-Stack Applications',
     duration: 13,
     text: "With 15 deployed full-stack applications across fintech, logistics, and AI career tools, I engineer systems designed for sub-second latency and measurable business impact."
@@ -65,7 +63,7 @@ const tourChapters = [
   {
     id: 4,
     targetId: 'contact',
-    title: 'Ready for Industry Opportunities',
+    title: 'Industry Opportunities',
     subhead: 'Ready to Join Engineering Teams',
     duration: 12,
     text: "I am actively seeking industry opportunities to contribute applied AI and full-stack engineering to high-performing teams. Let's connect and build what's next."
@@ -78,8 +76,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
   const [selectedVoice, setSelectedVoice] = useState('christopher');
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(12);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showVoiceMenu, setShowVoiceMenu] = useState(false);
 
@@ -116,13 +112,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     clearHighlights();
   };
 
-  const formatTime = (secs) => {
-    const s = Math.floor(secs || 0);
-    const m = Math.floor(s / 60);
-    const rem = s % 60;
-    return `${m}:${rem < 10 ? '0' : ''}${rem}`;
-  };
-
   const playChapter = (index, rate = playbackRate, voice = selectedVoice) => {
     stopAllAudio();
 
@@ -134,8 +123,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
 
     const chapter = tourChapters[index];
     setCurrentChapterIndex(index);
-    setCurrentTime(0);
-    setDuration(chapter.duration);
     highlightSection(chapter.targetId);
 
     // Audio file path based on voice
@@ -146,15 +133,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     audio.playbackRate = rate;
     audio.muted = isMuted;
     audioRef.current = audio;
-
-    audio.ontimeupdate = () => {
-      if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
-        if (audioRef.current.duration && !isNaN(audioRef.current.duration)) {
-          setDuration(audioRef.current.duration);
-        }
-      }
-    };
 
     audio.onended = () => {
       if (index + 1 < tourChapters.length) {
@@ -172,12 +150,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       fallbackAudio.muted = isMuted;
       audioRef.current = fallbackAudio;
 
-      fallbackAudio.ontimeupdate = () => {
-        if (audioRef.current) {
-          setCurrentTime(audioRef.current.currentTime);
-        }
-      };
-
       fallbackAudio.onended = () => {
         if (index + 1 < tourChapters.length) {
           playChapter(index + 1, rate, voice);
@@ -187,7 +159,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       };
 
       fallbackAudio.play().then(() => setIsPlaying(true)).catch(() => {
-        // Fallback to browser synthesis if needed
         if (synthRef.current) {
           const utterance = new SpeechSynthesisUtterance(chapter.text);
           utterance.rate = rate;
@@ -247,14 +218,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     }
   };
 
-  const handleSeek = (e) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
-    }
-  };
-
   const toggleMute = () => {
     const nextMute = !isMuted;
     setIsMuted(nextMute);
@@ -304,89 +267,90 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
   return (
     <div className={`audio-tour-floating-bar gold-shimmer-card ${isExpanded ? 'is-expanded' : ''}`}>
       
-      {/* Top Header Row */}
+      {/* Ultra-Clean Single Row Professional Pill HUD */}
       <div className="tour-main-row">
         
-        {/* Left: Indicator & Chapter Info */}
+        {/* Left: Badge & Live Chapter */}
         <div className="tour-info-left">
           <div className="tour-badge-pill">
             <Radio size={12} className="gold-pulse-icon" />
-            <span className="tour-live-lbl">60s ADVANCED NEURAL TTS TOUR</span>
+            <span className="tour-live-lbl">60s AI TOUR</span>
           </div>
 
           <div className="tour-text-preview">
             <span className="tour-chapter-num">0{currentChapterIndex + 1}/04</span>
+            <span className="tour-chapter-dot">&bull;</span>
             <span className="tour-chapter-name">{currentChapter.title}</span>
           </div>
         </div>
 
-        {/* Center: Live 16-Bar Audio Spectrum Visualizer */}
+        {/* Center: Sleek 10-Bar Audio Spectrum Waveform */}
         <div className={`tour-spectrum-equalizer ${isPlaying ? 'is-active' : ''}`}>
-          {[...Array(16)].map((_, i) => (
+          {[...Array(10)].map((_, i) => (
             <span 
               key={i} 
               className="spectrum-bar" 
-              style={{ animationDelay: `${(i * 0.08) % 0.8}s` }}
+              style={{ animationDelay: `${(i * 0.1) % 0.8}s` }}
             ></span>
           ))}
         </div>
 
-        {/* Right Controls */}
+        {/* Right: Streamlined Action Controls */}
         <div className="tour-controls-group">
           
-          {/* Previous Chapter */}
+          {/* Previous */}
           <button 
             className="tour-btn-icon" 
             onClick={skipPrev} 
             disabled={currentChapterIndex === 0}
             title="Previous Chapter"
           >
-            <Rewind size={13} />
+            <Rewind size={12} />
           </button>
 
-          {/* Main Play/Pause Button */}
+          {/* Main Play / Pause */}
           <button 
             className="tour-btn-main gold-shimmer-button" 
             onClick={togglePlay}
-            title={isPlaying ? "Pause Narration" : "Play Narration"}
+            title={isPlaying ? "Pause Tour" : "Play Tour"}
           >
-            {isPlaying ? <Pause size={13} /> : <Play size={13} />}
+            {isPlaying ? <Pause size={12} /> : <Play size={12} />}
             <span>{isPlaying ? 'PAUSE' : 'PLAY'}</span>
           </button>
 
-          {/* Next Chapter */}
+          {/* Next */}
           <button 
             className="tour-btn-icon" 
             onClick={skipNext} 
             disabled={currentChapterIndex === tourChapters.length - 1}
             title="Next Chapter"
           >
-            <FastForward size={13} />
+            <FastForward size={12} />
           </button>
 
-          {/* Speed Multiplier */}
+          {/* Playback Speed */}
           <button 
             className="tour-btn-speed" 
             onClick={cycleSpeed}
-            title="Narration Playback Rate"
+            title="Change Playback Speed"
           >
             <span>{playbackRate}x</span>
           </button>
 
-          {/* Voice Switcher Dropdown Toggle */}
+          {/* Voice Model Selector Dropdown */}
           <div className="tour-voice-dropdown-wrapper">
             <button 
               className="tour-btn-voice" 
               onClick={() => setShowVoiceMenu(prev => !prev)}
-              title="Select Neural TTS Voice Model"
+              title="Select Neural TTS Voice"
             >
-              <User size={12} />
+              <User size={11} />
               <span>{activeVoiceObj.name}</span>
             </button>
 
             {showVoiceMenu && (
               <div className="tour-voice-menu">
-                <div className="voice-menu-header">SELECT NEURAL TTS MODEL</div>
+                <div className="voice-menu-header">NEURAL TTS VOICE MODEL</div>
                 {voicePersonas.map(vp => (
                   <button 
                     key={vp.id}
@@ -404,62 +368,46 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
             )}
           </div>
 
-          {/* Volume / Mute */}
+          {/* Mute Toggle */}
           <button 
             className="tour-btn-icon" 
             onClick={toggleMute}
-            title={isMuted ? "Unmute" : "Mute"}
+            title={isMuted ? "Unmute" : "Mute Audio"}
           >
-            {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
+            {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
           </button>
 
-          {/* Expand Transcript Drawer */}
+          {/* Live Transcript Toggle */}
           <button 
-            className="tour-btn-icon" 
+            className={`tour-btn-icon ${isExpanded ? 'is-active-btn' : ''}`}
             onClick={() => setIsExpanded(prev => !prev)}
-            title={isExpanded ? "Collapse Live Transcript" : "Expand Live Transcript & Chapters"}
+            title={isExpanded ? "Hide Transcript" : "View Live Subtitles Transcript"}
           >
-            {isExpanded ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+            <MessageSquareText size={12} />
           </button>
 
-          {/* Close Tour */}
+          {/* Close */}
           <button 
             className="tour-btn-close" 
             onClick={() => {
               stopAllAudio();
               onClose();
             }}
-            title="Exit Audio Tour"
+            title="Close Audio Tour"
           >
-            <X size={14} />
+            <X size={13} />
           </button>
         </div>
 
       </div>
 
-      {/* Scrubber Timeline Bar */}
-      <div className="tour-timeline-row">
-        <span className="timeline-time">{formatTime(currentTime)}</span>
-        <input 
-          type="range" 
-          min="0" 
-          max={duration || 12} 
-          step="0.1" 
-          value={currentTime} 
-          onChange={handleSeek}
-          className="tour-seek-slider"
-          aria-label="Audio Tour Scrub Bar"
-        />
-        <span className="timeline-time">{formatTime(duration)}</span>
-      </div>
-
-      {/* Expandable Live Transcript HUD & Chapter Nav */}
+      {/* Expandable Synchronized Captions Drawer */}
       {isExpanded && (
         <div className="tour-expanded-drawer">
           <div className="tour-transcript-box">
-            <div className="transcript-tag">LIVE SYNCHRONIZED TRANSCRIPT</div>
+            <div className="transcript-tag">SYNCHRONIZED LIVE CAPTIONS</div>
             <p className="transcript-live-text">
-              <Sparkles size={13} className="gold-pulse-icon inline-sparkle" />
+              <Sparkles size={12} className="gold-pulse-icon inline-sparkle" />
               "{currentChapter.text}"
             </p>
           </div>
