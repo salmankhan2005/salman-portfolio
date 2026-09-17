@@ -11,27 +11,45 @@ import {
   Rewind,
   MessageSquareText,
   User,
-  Radio
+  Radio,
+  Mic
 } from 'lucide-react';
 
 const voicePersonas = [
   {
+    id: 'salman',
+    name: 'Salman Khan',
+    label: "Salman's AI Neural Voice Clone",
+    accent: 'Authentic Indian-English (Natural)',
+    featured: true
+  },
+  {
+    id: 'realtime_browser',
+    name: 'Real-Time Web TTS',
+    label: 'Live Device Speech Engine',
+    accent: 'Real-Time Browser Synthesis',
+    featured: false
+  },
+  {
     id: 'christopher',
     name: 'Christopher',
     label: 'Studio Executive Male',
-    accent: 'US Deep Neural'
+    accent: 'US Deep Neural',
+    featured: false
   },
   {
     id: 'ava',
     name: 'Ava',
     label: 'Studio Broadcaster Female',
-    accent: 'US Multilingual Neural'
+    accent: 'US Multilingual Neural',
+    featured: false
   },
   {
     id: 'andrew',
     name: 'Andrew',
     label: 'Conversational Tech Lead',
-    accent: 'US Studio Neural'
+    accent: 'US Studio Neural',
+    featured: false
   }
 ];
 
@@ -73,7 +91,7 @@ const tourChapters = [
 export default function AudioTour({ isActive, onClose, onShowToast }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-  const [selectedVoice, setSelectedVoice] = useState('christopher');
+  const [selectedVoice, setSelectedVoice] = useState('salman');
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -125,7 +143,36 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     setCurrentChapterIndex(index);
     highlightSection(chapter.targetId);
 
-    // Audio file path based on voice
+    // Option A: Real-Time Web Speech API in Browser
+    if (voice === 'realtime_browser' && synthRef.current) {
+      const utterance = new SpeechSynthesisUtterance(chapter.text);
+      utterance.rate = rate;
+      utterance.pitch = 1.0;
+      
+      const availVoices = synthRef.current.getVoices();
+      const preferredVoice = availVoices.find(v => v.lang.startsWith('en-IN') || v.lang.startsWith('en-US')) || availVoices[0];
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      utterance.onend = () => {
+        if (index + 1 < tourChapters.length) {
+          playChapter(index + 1, rate, voice);
+        } else {
+          stopAllAudio();
+          if (onShowToast) onShowToast('Audio Tour Completed!');
+        }
+      };
+
+      utterance.onerror = (e) => {
+        console.warn('Browser speech error:', e);
+        stopAllAudio();
+      };
+
+      synthRef.current.speak(utterance);
+      setIsPlaying(true);
+      return;
+    }
+
+    // Option B: High-Definition Neural TTS (Salman / Christopher / Ava / Andrew)
     const audioPath = `/assets/audio/tour_chapter_${chapter.id}_${voice}.mp3`;
     const fallbackPath = `/assets/audio/tour_chapter_${chapter.id}.mp3`;
 
@@ -144,7 +191,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     };
 
     audio.onerror = () => {
-      console.warn(`Primary audio ${audioPath} error, attempting fallback ${fallbackPath}`);
+      console.warn(`Primary audio ${audioPath} error, falling back to ${fallbackPath}`);
       const fallbackAudio = new Audio(fallbackPath);
       fallbackAudio.playbackRate = rate;
       fallbackAudio.muted = isMuted;
@@ -195,7 +242,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       setIsPlaying(false);
       clearHighlights();
     } else {
-      if (audioRef.current && audioRef.current.paused && audioRef.current.currentTime > 0) {
+      if (selectedVoice !== 'realtime_browser' && audioRef.current && audioRef.current.paused && audioRef.current.currentTime > 0) {
         audioRef.current.play().then(() => setIsPlaying(true));
         highlightSection(tourChapters[currentChapterIndex].targetId);
       } else {
@@ -231,7 +278,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     setShowVoiceMenu(false);
     if (onShowToast) {
       const v = voicePersonas.find(x => x.id === voiceId);
-      onShowToast(`TTS Voice: ${v ? v.name : voiceId}`);
+      onShowToast(`Voice Switched: ${v ? v.name : voiceId}`);
     }
     if (isPlaying) {
       playChapter(currentChapterIndex, playbackRate, voiceId);
@@ -340,25 +387,28 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
           {/* Voice Model Selector Dropdown */}
           <div className="tour-voice-dropdown-wrapper">
             <button 
-              className="tour-btn-voice" 
+              className={`tour-btn-voice ${activeVoiceObj.featured ? 'is-featured' : ''}`}
               onClick={() => setShowVoiceMenu(prev => !prev)}
-              title="Select Neural TTS Voice"
+              title="Select Voice: Salman's AI Voice Clone / Real-time Web TTS / Studio Voices"
             >
-              <User size={11} />
+              <Mic size={11} className="voice-mic-icon" />
               <span>{activeVoiceObj.name}</span>
             </button>
 
             {showVoiceMenu && (
               <div className="tour-voice-menu">
-                <div className="voice-menu-header">NEURAL TTS VOICE MODEL</div>
+                <div className="voice-menu-header">SELECT VOICE ENGINE</div>
                 {voicePersonas.map(vp => (
                   <button 
                     key={vp.id}
-                    className={`voice-menu-item ${selectedVoice === vp.id ? 'selected' : ''}`}
+                    className={`voice-menu-item ${selectedVoice === vp.id ? 'selected' : ''} ${vp.featured ? 'featured-voice-item' : ''}`}
                     onClick={() => handleVoiceChange(vp.id)}
                   >
                     <div className="voice-name-row">
-                      <span className="v-name">{vp.name}</span>
+                      <span className="v-name">
+                        {vp.featured && <span className="v-featured-star">★ </span>}
+                        {vp.name}
+                      </span>
                       <span className="v-accent">{vp.accent}</span>
                     </div>
                     <span className="v-desc">{vp.label}</span>

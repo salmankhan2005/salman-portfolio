@@ -28,6 +28,12 @@ chapters_text = [
 ]
 
 voices = {
+    'salman': {
+        'code': 'en-IN-PrabhatNeural',
+        'rate': '+1%',
+        'pitch': '+0Hz',
+        'name': 'Salman Khan (AI Neural Clone)'
+    },
     'christopher': {
         'code': 'en-US-ChristopherNeural',
         'rate': '+2%',
@@ -57,8 +63,8 @@ async def generate_all():
             await communicate.save(filename)
             print(f"  + Saved {filename} ({os.path.getsize(filename)} bytes)")
             
-            # For default compatibility, save Christopher as tour_chapter_X.mp3
-            if v_key == 'christopher':
+            # Save salman voice as the default tour_chapter_X.mp3 as well
+            if v_key == 'salman':
                 default_file = f"public/assets/audio/tour_chapter_{chap['id']}.mp3"
                 communicate_default = edge_tts.Communicate(chap['text'], v_info['code'], rate=v_info['rate'], pitch=v_info['pitch'])
                 await communicate_default.save(default_file)
