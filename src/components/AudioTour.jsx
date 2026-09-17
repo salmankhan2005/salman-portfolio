@@ -16,29 +16,29 @@ const tourChapters = [
     id: 'intro',
     targetId: 'hero',
     title: 'Introduction & Mission',
-    text: "Welcome. I am Salman Khan, an AI Engineer and Product Builder completing my B.Tech in Artificial Intelligence and Data Science with an 8.72 CGPA.",
-    duration: 9
+    audioSrc: '/assets/audio/tour_chapter_1.mp3',
+    fallbackText: "Welcome to my portfolio. I am Salman Khan, an AI Engineer and Product Builder completing my B.Tech in Artificial Intelligence and Data Science with an 8.72 CGPA."
   },
   {
     id: 'systems',
     targetId: 'systems',
     title: 'Autonomous Multi-Agents & Architecture',
-    text: "I have architected over 30 autonomous multi-agent pipelines on n8n, orchestrating specialized GPT-4o sub-agents for real-time compliance and intelligence.",
-    duration: 11
+    audioSrc: '/assets/audio/tour_chapter_2.mp3',
+    fallbackText: "I have architected over 30 autonomous multi-agent pipelines on n8n, orchestrating specialized GPT-4o sub-agents for real-time compliance and predictive intelligence."
   },
   {
     id: 'work',
     targetId: 'featured-work',
     title: 'Production Apps & Enterprise Impact',
-    text: "With 15 deployed full-stack applications across fintech, logistics, and AI career tools, I turn complex technical challenges into effortless human experiences.",
-    duration: 12
+    audioSrc: '/assets/audio/tour_chapter_3.mp3',
+    fallbackText: "With 15 deployed full-stack applications across fintech, logistics, and AI career tools, I engineer systems designed for sub-second latency and measurable business impact."
   },
   {
     id: 'contact',
     targetId: 'contact',
     title: 'Ready for Industry Opportunities',
-    text: "I am actively seeking industry roles to build applied AI systems with high-performing engineering teams. Let's connect and build what's next.",
-    duration: 9
+    audioSrc: '/assets/audio/tour_chapter_4.mp3',
+    fallbackText: "I am actively seeking industry opportunities to contribute applied AI and full-stack engineering to high-performing teams. Let's connect and build what's next."
   }
 ];
 
@@ -46,10 +46,8 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [progress, setProgress] = useState(0);
-  const synthRef = useRef(window.speechSynthesis || null);
-  const utteranceRef = useRef(null);
-  const timerRef = useRef(null);
+  const audioRef = useRef(null);
+  const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
 
   // Clean up any highlighted elements
   const clearHighlights = () => {
@@ -68,15 +66,24 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     }
   };
 
-  const speakChapter = (index, rate = playbackRate) => {
-    if (!synthRef.current) return;
-
-    synthRef.current.cancel();
+  const stopAllAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    if (synthRef.current) {
+      synthRef.current.cancel();
+    }
+    setIsPlaying(false);
     clearHighlights();
+  };
+
+  const playChapter = (index, rate = playbackRate) => {
+    stopAllAudio();
 
     if (index >= tourChapters.length) {
-      setIsPlaying(false);
-      setProgress(100);
+      clearHighlights();
       if (onShowToast) onShowToast('Audio Tour Completed!');
       return;
     }
@@ -85,78 +92,101 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     setCurrentChapterIndex(index);
     highlightSection(chapter.targetId);
 
-    const utterance = new SpeechSynthesisUtterance(chapter.text);
-    utterance.rate = rate;
-    utterance.pitch = 1.0;
+    // 1. Try High-Definition Studio Neural MP3 first
+    const audio = new Audio(chapter.audioSrc);
+    audio.playbackRate = rate;
+    audioRef.current = audio;
 
-    // Pick best English voice if available
-    const voices = synthRef.current.getVoices();
-    const preferredVoice = voices.find(v => (v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel')))) || voices[0];
-    if (preferredVoice) utterance.voice = preferredVoice;
-
-    utterance.onend = () => {
+    audio.onended = () => {
       if (index + 1 < tourChapters.length) {
-        speakChapter(index + 1, rate);
+        playChapter(index + 1, rate);
       } else {
-        setIsPlaying(false);
-        setProgress(100);
-        clearHighlights();
+        stopAllAudio();
         if (onShowToast) onShowToast('Audio Tour Completed!');
       }
     };
 
-    utterance.onerror = () => {
-      setIsPlaying(false);
+    audio.onerror = () => {
+      // 2. Fallback to Web Speech Synthesis if audio file fails to load
+      if (synthRef.current) {
+        const utterance = new SpeechSynthesisUtterance(chapter.fallbackText);
+        utterance.rate = rate;
+        utterance.onend = () => {
+          if (index + 1 < tourChapters.length) {
+            playChapter(index + 1, rate);
+          } else {
+            stopAllAudio();
+          }
+        };
+        synthRef.current.speak(utterance);
+        setIsPlaying(true);
+      }
     };
 
-    utteranceRef.current = utterance;
-    synthRef.current.speak(utterance);
-    setIsPlaying(true);
+    audio.play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch((err) => {
+        console.warn('HD Audio play caught:', err);
+        // Fallback to speech synthesis
+        if (synthRef.current) {
+          const utterance = new SpeechSynthesisUtterance(chapter.fallbackText);
+          utterance.rate = rate;
+          utterance.onend = () => {
+            if (index + 1 < tourChapters.length) {
+              playChapter(index + 1, rate);
+            } else {
+              stopAllAudio();
+            }
+          };
+          synthRef.current.speak(utterance);
+          setIsPlaying(true);
+        }
+      });
   };
 
   const togglePlay = () => {
-    if (!synthRef.current) {
-      if (onShowToast) onShowToast('Speech synthesis not supported in this browser.');
-      return;
-    }
-
     if (isPlaying) {
-      synthRef.current.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      if (synthRef.current) {
+        synthRef.current.cancel();
+      }
       setIsPlaying(false);
       clearHighlights();
     } else {
-      const idx = progress >= 100 ? 0 : currentChapterIndex;
-      speakChapter(idx, playbackRate);
+      if (audioRef.current && audioRef.current.paused && audioRef.current.currentTime > 0) {
+        audioRef.current.play().then(() => setIsPlaying(true));
+        highlightSection(tourChapters[currentChapterIndex].targetId);
+      } else {
+        playChapter(currentChapterIndex, playbackRate);
+      }
     }
   };
 
   const restartTour = () => {
-    if (!synthRef.current) return;
-    synthRef.current.cancel();
     setCurrentChapterIndex(0);
-    setProgress(0);
-    speakChapter(0, playbackRate);
+    playChapter(0, playbackRate);
   };
 
   const cycleSpeed = () => {
     const nextRate = playbackRate === 1 ? 1.25 : playbackRate === 1.25 ? 1.5 : 1;
     setPlaybackRate(nextRate);
-    if (isPlaying) {
-      speakChapter(currentChapterIndex, nextRate);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextRate;
     }
   };
 
   useEffect(() => {
     if (isActive) {
-      speakChapter(0, 1);
+      playChapter(0, 1);
     } else {
-      if (synthRef.current) synthRef.current.cancel();
-      setIsPlaying(false);
-      clearHighlights();
+      stopAllAudio();
     }
     return () => {
-      if (synthRef.current) synthRef.current.cancel();
-      clearHighlights();
+      stopAllAudio();
     };
   }, [isActive]);
 
@@ -169,7 +199,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       <div className="tour-info-left">
         <div className="tour-badge-pill">
           <Headphones size={13} className="gold-pulse-icon" />
-          <span className="tour-live-lbl">60s EXECUTIVE AUDIO TOUR</span>
+          <span className="tour-live-lbl">60s HD STUDIO AUDIO TOUR</span>
         </div>
         
         <div className="tour-text-preview">
@@ -217,8 +247,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
         <button 
           className="tour-btn-close" 
           onClick={() => {
-            if (synthRef.current) synthRef.current.cancel();
-            clearHighlights();
+            stopAllAudio();
             onClose();
           }}
           title="Close Audio Tour"

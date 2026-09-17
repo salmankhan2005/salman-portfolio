@@ -6183,15 +6183,21 @@ body::before {
 }
 
 .recruiter-avatar {
-  width: 76px;
-  height: 76px;
+  width: 88px;
+  height: 88px;
   object-fit: cover;
-  object-position: center 15%;
+  object-position: center center;
   border-radius: 50%;
-  border: 2px solid rgba(212, 175, 55, 0.8);
+  border: 2.5px solid rgba(212, 175, 55, 0.9);
   background: #14120F;
-  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.45);
   flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.recruiter-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 26px rgba(212, 175, 55, 0.65);
 }
 
 .recruiter-meta-block {

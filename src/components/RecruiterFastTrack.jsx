@@ -98,7 +98,7 @@ export default function RecruiterFastTrack({ isOpen, onClose, onOpenDossier, onS
         <div className="recruiter-snapshot-card">
           <div className="recruiter-profile-mini">
             <img 
-              src="/assets/images/salman_profile_cutout.png" 
+              src="/assets/images/salman_avatar_hd.png" 
               alt="Salman Khan D" 
               className="recruiter-avatar"
             />
