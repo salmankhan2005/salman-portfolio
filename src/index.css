@@ -6211,10 +6211,11 @@ body::before {
 }
 
 .recruiter-avatar {
-  width: 105px;
-  height: 146px;
+  width: 110px;
+  height: 110px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
   border-radius: 12px;
   border: 2px solid rgba(212, 175, 55, 0.85);
   background: #14120F;
@@ -6224,7 +6225,7 @@ body::before {
 }
 
 .recruiter-avatar:hover {
-  transform: scale(1.03) translateY(-2px);
+  transform: scale(1.04) translateY(-2px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.6);
   border-color: #FFF2C6;
 }
