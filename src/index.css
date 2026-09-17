@@ -6202,25 +6202,31 @@ body::before {
 .recruiter-profile-mini {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1.35rem;
+}
+
+.recruiter-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .recruiter-avatar {
-  width: 88px;
-  height: 88px;
+  width: 105px;
+  height: 132px;
   object-fit: cover;
-  object-position: center center;
-  border-radius: 50%;
-  border: 2.5px solid rgba(212, 175, 55, 0.9);
+  object-position: center top;
+  border-radius: 12px;
+  border: 2px solid rgba(212, 175, 55, 0.85);
   background: #14120F;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.45);
-  flex-shrink: 0;
-  transition: transform 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 22px rgba(212, 175, 55, 0.35);
+  display: block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .recruiter-avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 26px rgba(212, 175, 55, 0.65);
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.6);
+  border-color: #FFF2C6;
 }
 
 .recruiter-meta-block {
