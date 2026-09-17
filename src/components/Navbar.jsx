@@ -1,7 +1,14 @@
 import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Zap, Headphones } from 'lucide-react';
 
-export default function Navbar({ theme, onToggleTheme, onOpenCmd }) {
+export default function Navbar({ 
+  theme, 
+  onToggleTheme, 
+  onOpenCmd, 
+  onOpenRecruiter, 
+  onToggleAudioTour,
+  isAudioTourActive 
+}) {
   return (
     <nav className="editorial-nav" id="system-navigation">
       <div className="page-container nav-layout">
@@ -27,8 +34,28 @@ export default function Navbar({ theme, onToggleTheme, onOpenCmd }) {
           <li><a href="/assets/Salman_Khan_Resume.pdf" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--gold-primary)', fontWeight: 700 }}>RESUME (PDF)</a></li>
         </ul>
 
-        {/* End Actions */}
+        {/* End Actions: Fast-Track, Audio Tour, Resume & Hire */}
         <div className="nav-end-actions">
+          {/* ⚡ Recruiter Fast-Track Trigger */}
+          <button 
+            className="nav-recruiter-btn gold-shimmer-button"
+            onClick={onOpenRecruiter}
+            title="Recruiter Fast-Track (Press 'R' or Click for 30s Executive Summary)"
+          >
+            <Zap size={12} className="gold-pulse-icon" />
+            <span>RECRUITER MODE</span>
+          </button>
+
+          {/* 🎧 60s Audio Tour Trigger */}
+          <button 
+            className={`nav-audio-tour-btn ${isAudioTourActive ? 'is-active' : ''}`}
+            onClick={onToggleAudioTour}
+            title="60-Second AI Voice Executive Summary (Audio Tour)"
+          >
+            <Headphones size={13} />
+            <span>60s TOUR</span>
+          </button>
+
           <a 
             href="/assets/Salman_Khan_Resume.pdf" 
             target="_blank" 

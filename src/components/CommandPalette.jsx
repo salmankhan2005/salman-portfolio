@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const defaultCommands = [
+  { title: '⚡ Launch Recruiter Fast-Track (30s Executive Skim)', action: 'openRecruiter', shortcut: 'RF' },
+  { title: '🎧 Play 60s AI Voice Executive Audio Tour', action: 'openAudioTour', shortcut: 'AT' },
   { title: 'Jump to Hero / Identity', section: '#hero', shortcut: '00' },
   { title: 'Jump to Work Archive (Featured Systems)', section: '#featured-work', shortcut: '01' },
   { title: 'Jump to Freelance & Client Builds (Finova, Logistics, MealPlan)', section: '#freelance', shortcut: 'FL' },
@@ -12,12 +14,19 @@ const defaultCommands = [
   { title: 'Launch AI Assistant', action: 'openChatbot', shortcut: 'AI' },
   { title: 'Toggle Theme (Warm Ivory / Royal Dark)', action: 'toggleTheme', shortcut: 'TH' },
   { title: 'Download Official Resume PDF', action: 'downloadCv', shortcut: 'CV' },
-  { title: 'Copy Direct Email (samitha0786@gmail.com)', action: 'copyEmail', shortcut: 'CP' },
+  { title: 'Copy Direct Email (salmankhan2005sd@gmail.com)', action: 'copyEmail', shortcut: 'CP' },
   { title: 'Open LinkedIn Profile', action: 'openLinkedin', shortcut: 'LI' },
   { title: 'Open GitHub Profile', action: 'openGithub', shortcut: 'GH' }
 ];
 
-export default function CommandPalette({ isOpen, onClose, onToggleTheme, onShowToast }) {
+export default function CommandPalette({ 
+  isOpen, 
+  onClose, 
+  onToggleTheme, 
+  onShowToast,
+  onOpenRecruiter,
+  onToggleAudioTour
+}) {
   const [query, setQuery] = useState('');
   const inputRef = useRef(null);
 
@@ -40,19 +49,23 @@ export default function CommandPalette({ isOpen, onClose, onToggleTheme, onShowT
     if (cmd.section) {
       const el = document.querySelector(cmd.section);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (cmd.action === 'openRecruiter') {
+      if (onOpenRecruiter) onOpenRecruiter();
+    } else if (cmd.action === 'openAudioTour') {
+      if (onToggleAudioTour) onToggleAudioTour();
     } else if (cmd.action === 'toggleTheme') {
       onToggleTheme();
     } else if (cmd.action === 'openChatbot') {
       const trigger = document.querySelector('.ai-chatbot-trigger-btn');
       if (trigger) trigger.click();
     } else if (cmd.action === 'downloadCv') {
-      window.open('https://drive.google.com/file/d/1wTKMmKdFuPWwoiJqUITRqckhVwdTBYDn/view', '_blank');
+      window.open('/assets/Salman_Khan_Resume.pdf', '_blank');
     } else if (cmd.action === 'copyEmail') {
-      navigator.clipboard.writeText('samitha0786@gmail.com').then(() => {
-        onShowToast('Copied samitha0786@gmail.com to clipboard');
+      navigator.clipboard.writeText('salmankhan2005sd@gmail.com').then(() => {
+        onShowToast('Copied salmankhan2005sd@gmail.com to clipboard');
       });
     } else if (cmd.action === 'openLinkedin') {
-      window.open('https://www.linkedin.com/in/salmankhan2005', '_blank');
+      window.open('https://www.linkedin.com/in/salman-khan-d/', '_blank');
     } else if (cmd.action === 'openGithub') {
       window.open('https://github.com/salmankhan2005', '_blank');
     }
@@ -67,7 +80,7 @@ export default function CommandPalette({ isOpen, onClose, onToggleTheme, onShowT
           <input 
             ref={inputRef}
             type="text" 
-            placeholder="Type a section or jump command (e.g. work, systems, contact, dark)..." 
+            placeholder="Type a command (e.g. recruiter, tour, work, systems, contact)..." 
             style={{ width: '100%', background: 'none', border: 'none', fontFamily: 'var(--font-mono)', fontSize: '0.88rem', color: 'var(--text-primary)', outline: 'none' }}
             value={query}
             onChange={(e) => setQuery(e.target.value)}

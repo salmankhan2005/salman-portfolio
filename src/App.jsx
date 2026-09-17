@@ -15,6 +15,8 @@ import ProjectModal from './components/ProjectModal';
 import DossierModal from './components/DossierModal';
 import CommandPalette from './components/CommandPalette';
 import ChatBot from './components/ChatBot';
+import RecruiterFastTrack from './components/RecruiterFastTrack';
+import AudioTour from './components/AudioTour';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -22,9 +24,10 @@ export default function App() {
   const [activeProject, setActiveProject] = useState(null);
   const [isDossierOpen, setIsDossierOpen] = useState(false);
   const [isCmdOpen, setIsCmdOpen] = useState(false);
+  const [isRecruiterOpen, setIsRecruiterOpen] = useState(false);
+  const [isAudioTourActive, setIsAudioTourActive] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
-
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -45,17 +48,36 @@ export default function App() {
     triggerToast(`Switched to ${next === 'dark' ? 'Royal Obsidian Dark' : 'Warm Ivory'} Theme`);
   }
 
-  // Keyboard shortcut listener for CMD+K
+  // Keyboard shortcut listener for CMD+K, R (Recruiter Mode), A (Audio Tour), Esc
   useEffect(() => {
     function handleKeyDown(e) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      const isInputActive = activeTag === 'input' || activeTag === 'textarea' || document.activeElement.isContentEditable;
+
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setIsCmdOpen(prev => !prev);
+        return;
       }
+
+      if (!isInputActive) {
+        if (e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          setIsRecruiterOpen(prev => !prev);
+          return;
+        }
+        if (e.key.toLowerCase() === 'a' && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          setIsAudioTourActive(prev => !prev);
+          return;
+        }
+      }
+
       if (e.key === 'Escape') {
         setActiveProject(null);
         setIsDossierOpen(false);
         setIsCmdOpen(false);
+        setIsRecruiterOpen(false);
       }
     }
     window.addEventListener('keydown', handleKeyDown);
@@ -64,7 +86,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* Cinematic Splash Screen (No image — Interactive 3D Canvas visual) */}
+      {/* Cinematic Splash Screen */}
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
 
       {/* Global Navigation */}
@@ -73,6 +95,9 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onOpenCmd={() => setIsCmdOpen(true)}
         onOpenDossier={() => setIsDossierOpen(true)}
+        onOpenRecruiter={() => setIsRecruiterOpen(true)}
+        onToggleAudioTour={() => setIsAudioTourActive(prev => !prev)}
+        isAudioTourActive={isAudioTourActive}
       />
 
       {/* Main Content */}
@@ -91,22 +116,41 @@ export default function App() {
       {/* Footer */}
       <Footer />
 
-      {/* Modals & Dialogs */}
+      {/* 60s AI Voice Audio Tour Floating Player */}
+      <AudioTour 
+        isActive={isAudioTourActive} 
+        onClose={() => setIsAudioTourActive(false)} 
+        onShowToast={triggerToast} 
+      />
+
+      {/* ⚡ Recruiter Fast-Track (30s Executive Skim) Modal */}
+      <RecruiterFastTrack 
+        isOpen={isRecruiterOpen}
+        onClose={() => setIsRecruiterOpen(false)}
+        onOpenDossier={() => setIsDossierOpen(true)}
+        onShowToast={triggerToast}
+      />
+
+      {/* Project Schematic & System Architecture Modal */}
       <ProjectModal 
         projectId={activeProject} 
         onClose={() => setActiveProject(null)} 
       />
 
+      {/* Full Dossier Modal */}
       <DossierModal 
         isOpen={isDossierOpen} 
         onClose={() => setIsDossierOpen(false)} 
       />
 
+      {/* Command Palette */}
       <CommandPalette 
         isOpen={isCmdOpen} 
         onClose={() => setIsCmdOpen(false)}
         onToggleTheme={toggleTheme}
         onShowToast={triggerToast}
+        onOpenRecruiter={() => setIsRecruiterOpen(true)}
+        onToggleAudioTour={() => setIsAudioTourActive(prev => !prev)}
       />
 
       {/* AI Assistant Chatbot (Fixed Bottom-Left) */}
