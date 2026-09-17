@@ -14,7 +14,9 @@ import {
   Radio,
   Mic,
   CheckCircle2,
-  Bot
+  Bot,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 const realVoice = {
@@ -108,8 +110,6 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showVoiceMenu, setShowVoiceMenu] = useState(false);
-
   const audioRef = useRef(null);
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
 
@@ -299,10 +299,9 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
 
   const handleVoiceChange = (voiceId) => {
     setSelectedVoice(voiceId);
-    setShowVoiceMenu(false);
     if (onShowToast) {
       const v = allVoices.find(x => x.id === voiceId);
-      onShowToast(`Voice: ${v ? v.name : voiceId}`);
+      onShowToast(`Voice Selected: ${v ? v.name : voiceId}`);
     }
     if (isPlaying) {
       playChapter(currentChapterIndex, playbackRate, voiceId);
@@ -336,7 +335,7 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
   const activeVoiceObj = allVoices.find(v => v.id === selectedVoice) || realVoice;
 
   return (
-    <div className={`audio-tour-floating-bar gold-shimmer-card ${isExpanded ? 'is-expanded' : ''}`}>
+    <div className={`audio-tour-floating-bar ${isExpanded ? 'is-expanded' : ''}`}>
       
       {/* Ultra-Clean Single Row Professional Pill HUD */}
       <div className="tour-main-row">
@@ -408,54 +407,36 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
             <span>{playbackRate}x</span>
           </button>
 
-          {/* Voice Model Selector Dropdown */}
-          <div className="tour-voice-dropdown-wrapper">
-            <button 
-              className={`tour-btn-voice ${activeVoiceObj.isReal ? 'is-real-voice' : ''}`}
-              onClick={() => setShowVoiceMenu(prev => !prev)}
-              title="Select Voice (Salman Real Voice / Optional AI TTS Voices)"
-            >
+          {/* Voice Model Option Dropdown */}
+          <div className={`tour-voice-select-box ${activeVoiceObj.isReal ? 'is-real-voice' : ''}`}>
+            <span className="tour-voice-lbl-prefix">VOICE:</span>
+            <div className="tour-voice-icon-wrap">
               {activeVoiceObj.isReal ? (
-                <Mic size={11} className="voice-mic-icon" />
+                <Mic size={12} className="voice-mic-icon" />
               ) : (
-                <Bot size={11} className="voice-bot-icon" />
+                <Bot size={12} className="voice-bot-icon" />
               )}
-              <span>{activeVoiceObj.name}</span>
-            </button>
-
-            {showVoiceMenu && (
-              <div className="tour-voice-menu">
-                
-                {/* 1. Authentic Real Voice Section */}
-                <div className="voice-menu-header">🎙️ AUTHENTIC VOICE (DEFAULT)</div>
-                <button 
-                  className={`voice-menu-item real-voice-item ${selectedVoice === realVoice.id ? 'selected' : ''}`}
-                  onClick={() => handleVoiceChange(realVoice.id)}
-                >
-                  <div className="voice-name-row">
-                    <span className="v-name">★ {realVoice.name}</span>
-                    <span className="v-accent real-tag">ORIGINAL</span>
-                  </div>
-                  <span className="v-desc">{realVoice.label}</span>
-                </button>
-
-                {/* 2. Optional AI Neural TTS Models Section */}
-                <div className="voice-menu-header voice-menu-subhead">🤖 OPTIONAL AI NEURAL TTS VOICES</div>
-                {optionalTTSVoices.map(vp => (
-                  <button 
-                    key={vp.id}
-                    className={`voice-menu-item tts-voice-item ${selectedVoice === vp.id ? 'selected' : ''}`}
-                    onClick={() => handleVoiceChange(vp.id)}
-                  >
-                    <div className="voice-name-row">
-                      <span className="v-name">{vp.name}</span>
-                      <span className="v-accent tts-tag">AI TTS</span>
-                    </div>
-                    <span className="v-desc">{vp.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            </div>
+            <select 
+              id="audio-tour-voice-select"
+              aria-label="Voice Model Option Dropdown"
+              className="tour-voice-native-select"
+              value={selectedVoice}
+              onChange={(e) => handleVoiceChange(e.target.value)}
+              title="Voice Model: Choose Salman's Authentic Real Voice or Optional AI Neural TTS Models"
+            >
+              <optgroup label="🎙️ AUTHENTIC VOICE (DEFAULT)">
+                <option value="salman_real">★ Salman Khan (Real Voice - Default)</option>
+              </optgroup>
+              <optgroup label="🤖 OPTIONAL AI NEURAL TTS VOICES">
+                <option value="salman">Salman AI Clone (Neural TTS)</option>
+                <option value="christopher">Christopher (US Studio Executive)</option>
+                <option value="ava">Ava (US Studio Broadcaster)</option>
+                <option value="andrew">Andrew (US Conversational Lead)</option>
+                <option value="realtime_browser">Real-Time Browser Web TTS</option>
+              </optgroup>
+            </select>
+            <ChevronDown size={11} className="tour-select-arrow" />
           </div>
 
           {/* Mute Toggle */}
