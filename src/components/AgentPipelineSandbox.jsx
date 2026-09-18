@@ -502,7 +502,7 @@ export default function AgentPipelineSandbox() {
           <div className="section-heading-row">
             <h2 className="section-title">
               AUTONOMOUS AI AGENT <br />
-              <span className="gold-shimmer-text">PIPELINE SANDBOX</span>
+              <span className="sandbox-title-sub">PIPELINE SANDBOX</span>
             </h2>
             <p className="section-lead">
               Experience tangible, real-time proof of my 30+ production n8n multi-agent architectures. Select an autonomous agent workflow below and trigger live node-to-node execution with interactive telemetry.
@@ -511,7 +511,7 @@ export default function AgentPipelineSandbox() {
         </div>
 
         {/* Main Sandbox Interactive Terminal Wrapper */}
-        <div className="sandbox-card-chassis gold-shimmer-card">
+        <div className="sandbox-card-chassis">
           
           {/* Top Control Bar: Workflow Preset Switcher */}
           <div className="sandbox-top-presets-bar">
@@ -555,7 +555,7 @@ export default function AgentPipelineSandbox() {
             {/* Run Button Action */}
             <div className="workflow-action-box">
               <button 
-                className={`btn-run-agent-main gold-shimmer-button ${isExecuting ? 'is-running' : ''}`}
+                className={`btn-run-agent-main ${isExecuting ? 'is-running' : ''}`}
                 onClick={runPipeline}
                 disabled={isExecuting}
                 title="Trigger Real-Time Autonomous Execution"
