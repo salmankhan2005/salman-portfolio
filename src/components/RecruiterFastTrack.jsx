@@ -129,10 +129,6 @@ export default function RecruiterFastTrack({ isOpen, onClose, onOpenDossier, onS
               <div className="r-metric-val">15+</div>
               <div className="r-metric-lbl">Deployed Production Apps</div>
             </div>
-            <div className="recruiter-metric-item">
-              <div className="r-metric-val">300+</div>
-              <div className="r-metric-lbl">Engineers Trained in AI</div>
-            </div>
           </div>
         </div>
 
