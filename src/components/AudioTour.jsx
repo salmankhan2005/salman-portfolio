@@ -134,7 +134,8 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      audioRef.current = null;
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
     }
     if (synthRef.current) {
       synthRef.current.cancel();
@@ -144,11 +145,10 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
   };
 
   const playChapter = (index, rate = playbackRate, voice = selectedVoice) => {
-    stopAllAudio();
-
     if (index < 0 || index >= tourChapters.length) {
-      clearHighlights();
-      if (onShowToast) onShowToast('Audio Tour Completed!');
+      stopAllAudio();
+      setCurrentChapterIndex(0);
+      if (onShowToast) onShowToast('60-Second Audio Tour Completed!');
       return;
     }
 
@@ -158,6 +158,11 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
 
     // Option A: Real-Time Web Speech API in Browser
     if (voice === 'realtime_browser' && synthRef.current) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      synthRef.current.cancel();
+
       const utterance = new SpeechSynthesisUtterance(chapter.text);
       utterance.rate = rate;
       utterance.pitch = 1.0;
@@ -177,7 +182,11 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
 
       utterance.onerror = (e) => {
         console.warn('Browser speech error:', e);
-        stopAllAudio();
+        if (index + 1 < tourChapters.length) {
+          playChapter(index + 1, rate, voice);
+        } else {
+          stopAllAudio();
+        }
       };
 
       synthRef.current.speak(utterance);
@@ -185,7 +194,11 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       return;
     }
 
-    // Option B: Real Recorded Audio or Neural TTS Models
+    // Option B: Real Recorded Studio Audio or Neural TTS Audio Files
+    if (synthRef.current) {
+      synthRef.current.cancel();
+    }
+
     let audioPath = '';
     let fallbackPath = '';
 
@@ -200,59 +213,78 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
       fallbackPath = `/assets/audio/tour_chapter_${chapter.id}.mp3`;
     }
 
-    const audio = new Audio(audioPath);
+    let audio = audioRef.current;
+    if (!audio) {
+      audio = new Audio();
+      audioRef.current = audio;
+    }
+
+    // Set properties
+    audio.pause();
+    audio.src = audioPath;
     audio.playbackRate = rate;
     audio.muted = isMuted;
-    audioRef.current = audio;
 
+    // Attach seamless transition handler when track ends
     audio.onended = () => {
       if (index + 1 < tourChapters.length) {
+        // Automatically play the next chapter
         playChapter(index + 1, rate, voice);
       } else {
         stopAllAudio();
-        if (onShowToast) onShowToast('60-Second Audio Tour Finished!');
+        if (onShowToast) onShowToast('60-Second Audio Tour Completed!');
       }
     };
 
+    // Fallback if primary audio format encounters an error
     audio.onerror = () => {
       console.warn(`Primary audio ${audioPath} error, attempting fallback ${fallbackPath}`);
-      const fallbackAudio = new Audio(fallbackPath);
-      fallbackAudio.playbackRate = rate;
-      fallbackAudio.muted = isMuted;
-      audioRef.current = fallbackAudio;
-
-      fallbackAudio.onended = () => {
-        if (index + 1 < tourChapters.length) {
-          playChapter(index + 1, rate, voice);
-        } else {
-          stopAllAudio();
-        }
-      };
-
-      fallbackAudio.play().then(() => setIsPlaying(true)).catch(() => {
-        if (synthRef.current) {
-          const utterance = new SpeechSynthesisUtterance(chapter.text);
-          utterance.rate = rate;
-          utterance.onend = () => {
-            if (index + 1 < tourChapters.length) {
-              playChapter(index + 1, rate, voice);
-            } else {
-              stopAllAudio();
+      audio.onerror = null;
+      audio.src = fallbackPath;
+      audio.load();
+      const fallbackPromise = audio.play();
+      if (fallbackPromise !== undefined) {
+        fallbackPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(() => {
+            // Final fallback to browser speech synthesis
+            if (synthRef.current) {
+              const utterance = new SpeechSynthesisUtterance(chapter.text);
+              utterance.rate = rate;
+              utterance.onend = () => {
+                if (index + 1 < tourChapters.length) {
+                  playChapter(index + 1, rate, voice);
+                } else {
+                  stopAllAudio();
+                }
+              };
+              synthRef.current.speak(utterance);
+              setIsPlaying(true);
             }
-          };
-          synthRef.current.speak(utterance);
-          setIsPlaying(true);
-        }
-      });
+          });
+      }
     };
 
-    audio.play()
-      .then(() => {
-        setIsPlaying(true);
-      })
-      .catch((err) => {
-        console.warn('Audio play caught:', err);
-      });
+    // Start playback
+    audio.load();
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.warn('Audio play caught:', err);
+          // If browser requires explicit gesture or format issue, try fallback
+          if (audio.src !== fallbackPath && fallbackPath) {
+            audio.src = fallbackPath;
+            audio.load();
+            audio.play().then(() => setIsPlaying(true)).catch(() => {});
+          }
+        });
+    }
   };
 
   const togglePlay = () => {
@@ -264,10 +296,11 @@ export default function AudioTour({ isActive, onClose, onShowToast }) {
         synthRef.current.cancel();
       }
       setIsPlaying(false);
-      clearHighlights();
     } else {
-      if (selectedVoice !== 'realtime_browser' && audioRef.current && audioRef.current.paused && audioRef.current.currentTime > 0) {
-        audioRef.current.play().then(() => setIsPlaying(true));
+      if (selectedVoice !== 'realtime_browser' && audioRef.current && audioRef.current.src && audioRef.current.paused && audioRef.current.currentTime > 0) {
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+          playChapter(currentChapterIndex, playbackRate, selectedVoice);
+        });
         highlightSection(tourChapters[currentChapterIndex].targetId);
       } else {
         playChapter(currentChapterIndex, playbackRate, selectedVoice);
